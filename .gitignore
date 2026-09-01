@@ -1,0 +1,15 @@
+# Local environment
+
+.env
+.env.*
+
+# Local runtime state
+
+.local/
+tmp/
+dist/
+
+# OS
+
+.DS_Store
+Thumbs.db
