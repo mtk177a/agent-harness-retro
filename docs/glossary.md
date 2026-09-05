@@ -56,11 +56,21 @@ Normalized observations from coding-agent sessions used as retrospective evidenc
 A bounded analysis of past coding-agent behavior intended to identify evidence-backed opportunities to improve an outer harness.\
 A retrospective does not imply that a harness change will be made.
 
+## Observation
+
+A statement directly supported by normalized session evidence or a checked current harness artifact.\
+An observation is kept separate from interpretation and proposed action.
+
 ## Finding
 
 A supported observation produced by retrospective analysis.\
 A finding describes what appears to have happened and why it matters.\
 It is distinct from a proposed solution.
+
+## Cause hypothesis
+
+An uncertain interpretation of why a finding occurred.\
+A cause hypothesis records supporting evidence, material counterevidence or alternatives, and unresolved uncertainty rather than being treated as an observation.
 
 ## Evidence
 
@@ -72,6 +82,21 @@ Evidence may reference session sources, verified source versions, bounded events
 A candidate response to one or more findings.\
 A proposal identifies an intended target, expected effect, tradeoffs, and validation requirements.\
 A proposal is not an approved change.
+
+## Decision outcome
+
+The retrospective response to a finding or candidate proposal.\
+Normal outcomes include a proposal, no change, rejection, and insufficient evidence.
+
+## Logical lineage
+
+One interaction lineage used for recurrence accounting.\
+Resumed observations of the same logical source and sources connected by explicit parent or fork relationships belong to one lineage rather than counting as independent occurrences.
+
+## Routing candidate
+
+A possible destination for an evidence-backed response, such as memory handoff, instructions, repository guidance, a Skill, deterministic enforcement, canonical project implementation or documentation, a one-off action, or no persistent change.\
+A routing candidate is compared only after the finding and likely responsibility scope have been established.
 
 ## Materialization
 
