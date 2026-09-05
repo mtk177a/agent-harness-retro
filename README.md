@@ -3,8 +3,8 @@
 `agent-harness-retro` uses coding-agent session evidence to retrospectively evaluate user-controlled agent harnesses and propose evidence-backed improvements.\
 It targets the instructions, Skills, Hooks, settings, validation, and other control surfaces that users and repositories own around coding agents.
 
-> Status: design / pre-implementation.
-> The architecture and initial implementation contract are being defined before the first usable release.
+> Status: proposal-only Skill implemented.
+> Live `agent-sessions` integration, private continuity state, and packaging remain future work.
 
 ## Purpose
 
@@ -65,9 +65,18 @@ Any repository may be a retrospective target.
 
 ## Evidence source
 
-`agent-harness-retro` consumes normalized session evidence from [`agent-sessions`](https://github.com/mtk177a/agent-sessions).\
+`agent-harness-retro` consumes the stable `v1` normalized session evidence contract from [`agent-sessions`](https://github.com/mtk177a/agent-sessions).\
 It does not parse provider-owned Codex, Claude Code, or other raw session formats directly.\
 This keeps provider access and harness interpretation as separate responsibilities.
+
+## Proposal-only Skill
+
+The initial implementation is the [`outer-harness-retrospective`](skills/outer-harness-retrospective/SKILL.md) Skill.\
+It accepts deliberately bounded normalized session evidence, a target scope, and relevant current outer-harness observations.\
+It separates observations, findings, cause hypotheses, scope assessment, and proposals, and it can return `no_change`, `reject`, or `insufficient_evidence` as normal decisions.
+
+The Skill does not acquire provider sessions, persist retrospective state, or modify an outer-harness artifact.\
+Its synthetic evaluation cases are maintained in [`evals/outer-harness-retrospective/cases.md`](evals/outer-harness-retrospective/cases.md).
 
 ## Retrospective model
 

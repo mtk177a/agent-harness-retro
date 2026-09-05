@@ -112,7 +112,7 @@ The same retrospective model applies to global and repository-local scopes.
 
 It must not depend directly on provider-native Codex, Claude Code, or other raw transcript formats.
 
-The required evidence contract is expected to include concepts equivalent to:
+The implemented Skill accepts supplied evidence shaped by the stable `agent-sessions` `v1` contract, including:
 
 - stable source reference;
 - provider;
@@ -123,6 +123,36 @@ The required evidence contract is expected to include concepts equivalent to:
 - completeness and omission information.
 
 The exact upstream schema is owned by `agent-sessions`.
+
+## Implemented proposal-only Skill
+
+The initial implementation is an agent-facing Skill that consumes supplied normalized evidence rather than invoking a provider adapter or `agent-sessions` directly.\
+Its required inputs are a deliberately bounded evidence set, the requested target scope, and relevant current outer-harness observations.
+
+The Skill validates provenance and completeness, groups explicitly related sources into logical lineages, distinguishes within-lineage retry from cross-session recurrence, and then produces findings and proposal-only decisions.\
+Resume observations under the same source reference and explicit parent or fork relationships do not create independent recurrence.\
+Ambiguous relationships remain uncertain rather than being inferred from similar content.
+
+The implemented result boundary separates:
+
+```text
+observation
+      │
+      ▼
+finding
+      │
+      ▼
+cause hypothesis
+      │
+      ▼
+scope and routing assessment
+      │
+      ▼
+proposal | no change | reject | insufficient evidence
+```
+
+This implementation does not provide live session acquisition, private continuity state, automatic materialization, or packaging and installation behavior.\
+Those responsibilities require separate evidence and changes.
 
 ## Current harness observation
 
