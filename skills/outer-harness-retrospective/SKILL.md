@@ -22,8 +22,11 @@ Require all of the following before making a material finding:
 - completeness and omission information for each evidence source;
 - stable source references and verified source versions for evidence used as material support.
 
-Accept the stable `agent-sessions` `v1` concepts when supplied: source identity, ordered events, relationships, completeness, omissions, and verified versions.\
-Reject unknown schema majors rather than guessing their meaning.
+Before interpreting version-dependent evidence, require every response envelope used as material support to contain `schema_version: v1` and `redaction_policy_version: v1`.\
+If either field is missing or has an unsupported value, return `insufficient_evidence` for every affected decision and do not interpret the remaining response fields as material support.
+
+After both envelope gates pass, accept the stable `agent-sessions` `v1` concepts: source identity, ordered events, relationships, completeness, omissions, and verified versions.\
+Do not guess the meaning of a missing or unsupported schema or redaction policy.
 
 Treat partial evidence as partial.\
 It may support a bounded observation only when the reported omission cannot affect that observation, but it must not silently support a broader claim.\
@@ -61,7 +64,10 @@ Build the minimum relationship graph supported by the supplied evidence:
 - observations with the same `source_ref`, including later verified versions after resume, belong to one logical source;
 - sources connected transitively by explicit `parent` or `forked_from` relationships belong to one lineage;
 - subagent evidence belongs to the parent's lineage only when an explicit relationship or normalized parent association establishes it;
-- distinct source references in complete evidence may count as independent logical sessions when no relationship or coverage gap makes their independence ambiguous;
+- distinct source references within the same source instance may count as independent logical sessions when relationship coverage is complete and no supplied context makes their independence ambiguous;
+- source references from different source instances do not establish independence by themselves, even when each response is complete;
+- cross-instance sources may count as independent only when supplied evidence establishes that they represent separate interactions;
+- sources for the same provider in different instances with the same provider-source fingerprint remain unresolved unless supplied evidence establishes whether they are copied observations or independent interactions;
 - repeated attempts within one logical source or lineage are within-session retries, not cross-session recurrence.
 
 Do not deduplicate sources merely because their text or failures look similar.\
@@ -150,7 +156,7 @@ Adapt presentation to the request, but include the following information.
 - target repository or explicit global target;
 - requested scope;
 - evidence bounds;
-- accepted schema and redaction policy versions when supplied;
+- accepted schema and redaction policy versions;
 - current harness artifacts checked and their known versions;
 - historical harness version, including `unknown` when not established.
 
