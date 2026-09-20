@@ -165,29 +165,29 @@ Do not add direct Codex, Claude Code, or other provider transcript parsers to th
 
 ## Language
 
-Public repository artifacts are written in English.
+English is the canonical language for public repository documents and rules.
+Maintained Japanese files are reference translations only; they do not define independent requirements or authority.
+If a Japanese reference differs from its English canonical source, the English source takes precedence.
 
-This includes:
+The maintained file pairs and synchronization rules are defined in `docs/localization.md`.
+When adding or changing a maintained English canonical file, use the repository-local `.agents/skills/maintain-japanese-references` Skill to create or review its Japanese reference in the same change.
+If the English edit does not affect Japanese meaning, leave the reference unchanged and record the reason in the pull request's Validation or Risks / Follow-up section.
+Do not translate ADRs as part of this maintained set.
+
+English remains the default for:
 
 - code and identifiers;
 - code comments;
-- README and documentation;
-- glossary and ADRs;
 - CLI or Skill public interfaces;
-- commit messages;
+- commit message summaries;
 - release notes;
-- repository policy files.
+- canonical README, documentation, glossary, ADRs, Skills, and repository policy files.
 
-Do not maintain synchronized full Japanese translations.
+Maintainer-created public Issues and pull requests use an English title and a short English `Summary`.
+Their other body sections and comments are Japanese by default and may be written in English when useful.
+Do not require external contributors to use Japanese, and do not require a full English and Japanese duplication of the body.
 
-Maintainer workflow may use Japanese when it reduces review or decision-making cost.
-
-For maintainer-created public Issues and pull requests:
-
-- use an English title;
-- include a short English summary sufficient to identify the public change;
-- detailed reasoning and review notes may be Japanese or English;
-- do not duplicate the entire body as an English/Japanese translation pair.
+`AGENTS-ja.md` is a reference translation of this file, not an independent instruction source.
 
 ## Change discipline
 
