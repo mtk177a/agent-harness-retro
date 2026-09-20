@@ -239,6 +239,7 @@ Requirements learned from private usage must be expressed as general product req
 
 - [Architecture](docs/architecture.md)
 - [Glossary](docs/glossary.md)
+- [Localization policy](docs/localization.md)
 - [ADR 0001: Target the user-controlled outer harness](docs/decisions/0001-target-the-user-controlled-outer-harness.md)
 - [ADR 0002: Separate session evidence, findings, and materialization](docs/decisions/0002-separate-session-evidence-findings-and-materialization.md)
 
