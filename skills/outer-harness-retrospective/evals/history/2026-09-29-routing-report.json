@@ -1,0 +1,113 @@
+{
+  "schema_version": 2,
+  "skill": "outer-harness-retrospective",
+  "skill_source": "public",
+  "evaluated_on": "2026-09-29",
+  "purpose": "Verify the approved-implementation exclusion while retaining retrospective routing",
+  "affected_responsibilities": [
+    "Skill discovery boundary"
+  ],
+  "selection": {
+    "path": "targeted-routing",
+    "cases": [
+      {
+        "id": "retrospective-request",
+        "conditions": [
+          "candidate"
+        ]
+      },
+      {
+        "id": "approved-harness-edit",
+        "conditions": [
+          "candidate"
+        ]
+      }
+    ]
+  },
+  "base": {
+    "commit": "404d6000d7c3e379df1e474f6793e76b4323cd41"
+  },
+  "candidate": {
+    "files": {
+      "SKILL-ja.md": {
+        "mode": "100644",
+        "sha256": "sha256:1a361d4c615adb51a30860ee3f9657b63bd808bbaef4130e1cce72b77632fcf3"
+      },
+      "SKILL.md": {
+        "mode": "100644",
+        "sha256": "sha256:49486f86f5e8ae4cf22c546d53acbe6179ddded3bd59d5005332be17e3ea604f"
+      }
+    }
+  },
+  "evaluation_inputs": {
+    "evaluation_files": {
+      "skills/outer-harness-retrospective/evals/triggers.json": "sha256:9b7c3f5bb682e869f7f1f0498f55ce242decaad0cf639a6f876dc7da8c58e6f6"
+    },
+    "case_files": {}
+  },
+  "environment": {
+    "client": "codex-cli 0.155.1",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max",
+    "sandbox": "read-only",
+    "auth_credentials_store": "keyring"
+  },
+  "checks": {
+    "repository": "unavailable"
+  },
+  "results": [
+    {
+      "case_id": "retrospective-request",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "routing-handlers",
+          "status": "pass",
+          "evidence": "Observed handlers: outer-harness-retrospective.",
+          "critical": true
+        }
+      ],
+      "evidence": "The response was inspected against the planned requirements.",
+      "routing_observation": {
+        "status": "observed",
+        "handlers": [
+          "outer-harness-retrospective"
+        ]
+      },
+      "status": "pass"
+    },
+    {
+      "case_id": "approved-harness-edit",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "routing-handlers",
+          "status": "fail",
+          "evidence": "Observed handlers: outer-harness-retrospective.",
+          "critical": true
+        }
+      ],
+      "evidence": "The response was inspected against the planned requirements.",
+      "routing_observation": {
+        "status": "observed",
+        "handlers": [
+          "outer-harness-retrospective"
+        ]
+      },
+      "status": "fail"
+    }
+  ],
+  "summary": {
+    "status": "fail",
+    "counts": {
+      "error": 0,
+      "fail": 1,
+      "inconclusive": 0,
+      "pass": 1
+    }
+  },
+  "stopping_reason": "The approved-implementation near miss still selected the retrospective Skill; more wording changes under the same hypothesis would not add useful evidence.",
+  "unverified": [
+    "Other routing cases, clients, and installed-Skill coexistence"
+  ]
+}

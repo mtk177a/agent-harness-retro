@@ -112,7 +112,7 @@ The same retrospective model applies to global and repository-local scopes.
 
 It must not depend directly on provider-native Codex, Claude Code, or other raw transcript formats.
 
-The implemented Skill accepts supplied evidence shaped by the stable `agent-sessions` `v1` contract, including:
+The implemented Skill accepts supplied evidence shaped by the stable `agent-sessions` `v2` contract, including:
 
 - stable source reference;
 - provider;
@@ -126,7 +126,7 @@ The exact upstream schema is owned by `agent-sessions`.
 
 ## Implemented proposal-only Skill
 
-The initial implementation is an agent-facing Skill that consumes supplied normalized evidence rather than invoking a provider adapter or `agent-sessions` directly.\
+The initial implementation is an agent-facing Skill that consumes normalized evidence obtained through its bundled acquisition script or supplied separately, rather than parsing provider-owned session formats directly.\
 Its required inputs are a deliberately bounded evidence set, the requested target scope, and relevant current outer-harness observations.
 
 The Skill validates provenance and completeness, groups explicitly related sources into logical lineages, distinguishes within-lineage retry from cross-session recurrence, and then produces findings and proposal-only decisions.\
@@ -151,8 +151,27 @@ scope and routing assessment
 proposal | no change | reject | insufficient evidence
 ```
 
-This implementation does not provide live session acquisition, private continuity state, automatic materialization, or packaging and installation behavior.\
-Those responsibilities require separate evidence and changes.
+The Skill can invoke its bundled acquisition script when local session evidence is requested.\
+It does not provide private continuity state or automatic materialization, and its proposal-only authority boundary remains unchanged.
+
+## Bounded pilot helper
+
+The Skill bundles a Python launcher and a Go helper under `skills/outer-harness-retrospective/scripts`.\
+The launcher fetches a pinned `agent-sessions` source commit from its public repository and builds it in a private temporary directory; an offline executable override must pass the same build check.\
+The helper invokes only the public `agent-sessions` `list`, `show`, `events`, and `verify` JSON commands.\
+It accepts only an executable whose Go build information identifies the clean pinned upstream commit.\
+It validates the `v2` schema before interpreting response data and rejects incomplete cohorts or candidate lineages.\
+Because `v2` bodies are unredacted, the helper discards recorded content and free-form metadata after validating and counting events.
+
+The helper collects every listing page before fixing the 14-day cohort from normalized interaction times.\
+It groups explicit relationships into logical lineages, examines at most ten candidate lineages per provider, and requires three complete independent lineages per provider before adding further candidates by time.\
+For each adopted source it checks verified versions before and after complete event pagination, with a total limit of 2,000 events.\
+An incomplete listing or material omission cannot establish an exhaustive cohort.
+
+Its bounded content-free metadata bundle is a temporary private handoff to the Skill, not persistent retrospective state.\
+Behavioral analysis additionally requires deliberately selected, privacy-reviewed excerpts or other bounded observations linked to verified source versions and event indexes.\
+The metadata bundle alone supports coverage accounting, not conclusions about agent behavior.\
+The helper does not interpret findings, inspect the current harness, select a control surface, or materialize a proposal.
 
 ## Current harness observation
 

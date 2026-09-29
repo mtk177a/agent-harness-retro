@@ -3,8 +3,8 @@
 `agent-harness-retro` uses coding-agent session evidence to retrospectively evaluate user-controlled agent harnesses and propose evidence-backed improvements.\
 It targets the instructions, Skills, Hooks, settings, validation, and other control surfaces that users and repositories own around coding agents.
 
-> Status: proposal-only Skill implemented.
-> Live `agent-sessions` integration, private continuity state, and packaging remain future work.
+> Status: proposal-only Skill and bounded pilot acquisition helper implemented.
+> Private continuity state and broader distribution remain future work.
 
 ## Purpose
 
@@ -65,7 +65,7 @@ Any repository may be a retrospective target.
 
 ## Evidence source
 
-`agent-harness-retro` consumes the stable `v1` normalized session evidence contract from [`agent-sessions`](https://github.com/mtk177a/agent-sessions).\
+`agent-harness-retro` consumes the stable `v2` normalized session evidence contract from [`agent-sessions`](https://github.com/mtk177a/agent-sessions).\
 It does not parse provider-owned Codex, Claude Code, or other raw session formats directly.\
 This keeps provider access and harness interpretation as separate responsibilities.
 
@@ -75,8 +75,34 @@ The initial implementation is the [`outer-harness-retrospective`](skills/outer-h
 It accepts deliberately bounded normalized session evidence, a target scope, and relevant current outer-harness observations.\
 It separates observations, findings, cause hypotheses, scope assessment, and proposals, and it can return `no_change`, `reject`, or `insufficient_evidence` as normal decisions.
 
-The Skill does not acquire provider sessions, persist retrospective state, or modify an outer-harness artifact.\
-Its synthetic evaluation cases are maintained in [`evals/outer-harness-retrospective/cases.md`](evals/outer-harness-retrospective/cases.md).
+The Skill includes a bounded acquisition script under `scripts/`; analysis remains proposal-only and does not persist retrospective state or modify an outer-harness artifact.\
+Its synthetic executable evaluation cases are maintained with the Skill in [`skills/outer-harness-retrospective/evals`](skills/outer-harness-retrospective/evals/README.md).
+
+## Bounded pilot acquisition
+
+The Skill's [`scripts/run.py`](skills/outer-harness-retrospective/scripts/run.py) requires Python 3, Git, and Go 1.26 or later.\
+It fetches `agent-sessions` from its public repository at the commit recorded in `scripts/retro-pilot/internal/pilot/agent-sessions.commit`, builds it in a private temporary directory, and passes the executable to the bundled Go helper.\
+The helper checks the executable's Go build information for that clean commit before reading sessions.\
+The source checkout and executable are removed after the run; no binary is committed or installed globally.
+The upstream source is [`mtk177a/agent-sessions`](https://github.com/mtk177a/agent-sessions) under the MIT license.\
+To update the pin, review the upstream contract and license, change the commit file, and rerun the bundled Go and Python checks before using real sessions.
+
+```text
+python3 skills/outer-harness-retrospective/scripts/run.py
+```
+
+An optional `--config <absolute-path>` selects an existing `agent-sessions` configuration.\
+For offline use, `--agent-sessions-bin <absolute-path>` skips fetching and building but still requires a clean executable at the pinned commit.\
+The helper fixes the start time when it runs, collects all `list` pages for Codex and Claude Code, and considers the previous 14 days.\
+It examines at most ten logical lineage candidates per provider, requires three complete independent lineages from each, and admits at most 2,000 normalized events in total.\
+Incomplete cohort timing, unsupported versions, material omissions, unstable verified versions, and ambiguous source instances produce `insufficient_evidence` rather than a complete cohort.
+
+The `v2` event bodies are not automatically redacted.\
+The helper therefore writes only content-free source and event metadata to a private temporary file outside the repository.\
+Standard output contains aggregate status and counts; the private file location is printed to standard error.\
+The operator supplies the metadata, relevant current harness observations, and only deliberately selected, privacy-reviewed excerpts to the Skill, then deletes the temporary file after review.\
+Metadata alone cannot establish a behavioral finding.\
+The helper does not retain retrospective state, post an Issue comment, or change a harness artifact.
 
 ## Retrospective model
 
@@ -238,6 +264,7 @@ Requirements learned from private usage must be expressed as general product req
 ## Documentation
 
 - [Architecture](docs/architecture.md)
+- [Evaluation and Skill audit](docs/evaluation.md)
 - [Glossary](docs/glossary.md)
 - [Localization policy](docs/localization.md)
 - [ADR 0001: Target the user-controlled outer harness](docs/decisions/0001-target-the-user-controlled-outer-harness.md)

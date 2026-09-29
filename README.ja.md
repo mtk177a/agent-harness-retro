@@ -6,8 +6,8 @@
 `agent-harness-retro` はコーディングエージェントのセッション証拠を使い、ユーザーが管理するハーネスを振り返って評価し、証拠に基づく改善を提案する。\
 対象は、コーディングエージェントの周囲にあり、ユーザーまたはリポジトリが管理する指示、Skill、Hook、設定、検証、その他の制御手段である。
 
-> 状態: 提案のみを行う Skill を実装済み。
-> 実際の `agent-sessions` との連携、非公開の継続状態、パッケージ化は今後の課題である。
+> 状態: 提案のみを行う Skill と、範囲を限定した試行用の証拠取得補助コマンドを実装済み。
+> 非公開の継続状態と、より広い範囲への配布は今後の課題である。
 
 ## 目的
 
@@ -68,7 +68,7 @@ agent-harness-retro
 
 ## 証拠の出所
 
-`agent-harness-retro` は [`agent-sessions`](https://github.com/mtk177a/agent-sessions) が提供する、安定した `v1` の正規化済みセッション証拠の公開仕様を利用する。\
+`agent-harness-retro` は [`agent-sessions`](https://github.com/mtk177a/agent-sessions) が提供する、安定した `v2` の正規化済みセッション証拠の公開仕様を利用する。\
 プロバイダーが所有する Codex、Claude Code、その他の生のセッション形式を直接解析しない。\
 これにより、プロバイダーへのアクセスとハーネスの解釈を別の責務に保つ。
 
@@ -78,8 +78,35 @@ agent-harness-retro
 この Skill は、意図的に範囲を限定した正規化済みのセッション証拠、対象範囲、関連する現在の外側のハーネスの観測結果を受け取る。\
 観測結果、所見、原因仮説、対象範囲の評価、提案を分離し、`no_change`、`reject`、`insufficient_evidence` を通常の判断として返せる。
 
-Skill はプロバイダーのセッションを取得せず、振り返りの状態を保存せず、外側のハーネスの成果物を変更しない。\
-合成評価のケースは [`evals/outer-harness-retrospective/cases.md`](evals/outer-harness-retrospective/cases.md) で管理する。
+Skill は範囲を限定した証拠取得スクリプトを `scripts/` に含む。\
+分析は提案にとどまり、振り返りの状態を保存したり、外側のハーネスの成果物を変更したりしない。\
+実行可能な合成評価のケースは、Skill の [`evals`](skills/outer-harness-retrospective/evals/README.md) で管理する。
+
+## 範囲を限定した試行用の証拠取得
+
+Skill 内の [`scripts/run.py`](skills/outer-harness-retrospective/scripts/run.py) には Python 3、Git、Go 1.26 以降が必要である。\
+`scripts/retro-pilot/internal/pilot/agent-sessions.commit` に記録されたコミットの `agent-sessions` を公開リポジトリから取得し、非公開の一時ディレクトリでビルドして、Skill に同梱した Go 補助コマンドへ渡す。\
+補助コマンドはセッションを読む前に、実行ファイルの Go ビルド情報が固定コミットと一致し、変更を含まないことを確認する。\
+取得したソースと実行ファイルは実行後に削除し、バイナリをコミットしたり、システム全体へインストールしたりしない。
+取得元は MIT ライセンスの [`mtk177a/agent-sessions`](https://github.com/mtk177a/agent-sessions) である。\
+固定コミットを更新するときは、上流の公開仕様とライセンスを確認し、コミットファイルを変更して、同梱の Go と Python の検査を再実行してから実セッションに使う。
+
+```text
+python3 skills/outer-harness-retrospective/scripts/run.py
+```
+
+既存の `agent-sessions` 設定を選ぶ場合は `--config <absolute-path>` を追加できる。\
+オフラインでは `--agent-sessions-bin <absolute-path>` で取得とビルドを省略できるが、固定コミットから作られた変更のない実行ファイルであることは引き続き確認する。\
+補助コマンドは実行時に開始時刻を固定し、Codex と Claude Code の `list` を全ページ取得して、直前の 14 日間を対象にする。\
+各提供元で最大 10 件の論理的な系統を候補として調べ、それぞれ完全かつ独立した系統を 3 件以上必要とし、採用する正規化済みイベントを合計 2,000 件以内に収める。\
+対象期間を確定できない場合、版が非対応の場合、判断に影響する欠落、検証済みの版の変化、情報源インスタンスの曖昧さがある場合は、完全な対象群とは扱わず `insufficient_evidence` とする。
+
+`v2` のイベント本文は自動的に秘匿処理されない。\
+そのため補助コマンドは、内容を含まない情報源とイベントのメタデータだけを、リポジトリ外の非公開の一時ファイルに書き込む。\
+標準出力には集計と結果だけを表示し、非公開ファイルの場所は標準エラー出力に表示する。\
+作業者は、メタデータ、関連する現在のハーネスの観測結果、意図的に選んで機密性を確認した抜粋だけを Skill に渡し、確認後に一時ファイルを削除する。\
+メタデータだけでは行動に関する所見を確立できない。\
+補助コマンドは振り返りの状態を保持せず、Issue コメントを投稿せず、ハーネスの成果物を変更しない。
 
 ## 振り返りモデル
 
@@ -241,6 +268,7 @@ improvement proposal
 ## 文書
 
 - [アーキテクチャ](docs/ja/architecture.md)
+- [評価と Skill 監査](docs/ja/evaluation.md)
 - [用語集](docs/ja/glossary.md)
 - [ローカリゼーション方針](docs/ja/localization.md)
 - [ADR 0001: Target the user-controlled outer harness](docs/decisions/0001-target-the-user-controlled-outer-harness.md)

@@ -9,13 +9,14 @@
 
 ## 翻訳の対応関係
 
-保守する英語版と日本語参考訳は、次の 7 組です。
+保守する英語版と日本語参考訳は、次の 8 組です。
 
 | 正式な英語版 | 日本語参考訳 |
 | --- | --- |
 | [`README.md`](../../README.md) | [`README.ja.md`](../../README.ja.md) |
 | [`AGENTS.md`](../../AGENTS.md) | [`AGENTS-ja.md`](../../AGENTS-ja.md) |
 | [`docs/architecture.md`](../architecture.md) | [`docs/ja/architecture.md`](architecture.md) |
+| [`docs/evaluation.md`](../evaluation.md) | [`docs/ja/evaluation.md`](evaluation.md) |
 | [`docs/glossary.md`](../glossary.md) | [`docs/ja/glossary.md`](glossary.md) |
 | [`docs/localization.md`](../localization.md) | [`docs/ja/localization.md`](localization.md) |
 | [`skills/outer-harness-retrospective/SKILL.md`](../../skills/outer-harness-retrospective/SKILL.md) | [`skills/outer-harness-retrospective/SKILL-ja.md`](../../skills/outer-harness-retrospective/SKILL-ja.md) |

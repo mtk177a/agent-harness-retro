@@ -170,6 +170,7 @@ Maintained Japanese files are reference translations only; they do not define in
 If a Japanese reference differs from its English canonical source, the English source takes precedence.
 
 The maintained file pairs and synchronization rules are defined in `docs/localization.md`.
+Use `docs/evaluation.md` for Skill audit and evaluation selection, execution, and reporting.
 When adding or changing a maintained English canonical file, use the repository-local `.agents/skills/maintain-japanese-references` Skill to create or review its Japanese reference in the same change.
 If the English edit does not affect Japanese meaning, leave the reference unchanged and record the reason in the pull request's Validation or Risks / Follow-up section.
 Do not translate ADRs as part of this maintained set.

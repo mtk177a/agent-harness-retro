@@ -6,13 +6,14 @@ They do not create an independent policy, product requirement, interface, or age
 
 ## Translation pairs
 
-The maintained English and Japanese files are these seven pairs:
+The maintained English and Japanese files are these eight pairs:
 
 | English source of truth | Japanese reference translation |
 | --- | --- |
 | [`README.md`](../README.md) | [`README.ja.md`](../README.ja.md) |
 | [`AGENTS.md`](../AGENTS.md) | [`AGENTS-ja.md`](../AGENTS-ja.md) |
 | [`docs/architecture.md`](architecture.md) | [`docs/ja/architecture.md`](ja/architecture.md) |
+| [`docs/evaluation.md`](evaluation.md) | [`docs/ja/evaluation.md`](ja/evaluation.md) |
 | [`docs/glossary.md`](glossary.md) | [`docs/ja/glossary.md`](ja/glossary.md) |
 | [`docs/localization.md`](localization.md) | [`docs/ja/localization.md`](ja/localization.md) |
 | [`skills/outer-harness-retrospective/SKILL.md`](../skills/outer-harness-retrospective/SKILL.md) | [`skills/outer-harness-retrospective/SKILL-ja.md`](../skills/outer-harness-retrospective/SKILL-ja.md) |

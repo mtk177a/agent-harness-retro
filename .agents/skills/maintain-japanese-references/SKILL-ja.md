@@ -18,6 +18,7 @@ description: リポジトリで指定された英語の正式版ファイルが�
 - `README.md` → `README.ja.md`
 - `AGENTS.md` → `AGENTS-ja.md`
 - `docs/architecture.md` → `docs/ja/architecture.md`
+- `docs/evaluation.md` → `docs/ja/evaluation.md`
 - `docs/glossary.md` → `docs/ja/glossary.md`
 - `docs/localization.md` → `docs/ja/localization.md`
 - `skills/outer-harness-retrospective/SKILL.md` → `skills/outer-harness-retrospective/SKILL-ja.md`
