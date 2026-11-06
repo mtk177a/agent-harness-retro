@@ -1,265 +1,367 @@
 # agent-harness-retro
 
-`agent-harness-retro` uses coding-agent session evidence to retrospectively evaluate user-controlled agent harnesses and propose evidence-backed improvements.\
-It targets the instructions, Skills, Hooks, settings, validation, and other control surfaces that users and repositories own around coding agents.
+`agent-harness-retro` is a Skill that reviews past work with coding agents such as Codex and Claude Code.\
+It compares selected conversations and tool activity with your current instructions and configuration.\
+It proposes changes with supporting evidence and a way to check their effect.
 
-> Status: proposal-only Skill and bounded pilot acquisition helper implemented.
-> Private continuity state and broader distribution remain future work.
+**Contents**
 
-## Purpose
+- [Capabilities](#capabilities)
+- [Review targets](#review-targets)
+- [Review workflow](#review-workflow)
+- [Review criteria](#review-criteria)
+- [Information handling](#information-handling)
+- [Acquisition script maintenance](#acquisition-script-maintenance)
+- [Documentation](#documentation)
+- [License](#license)
 
-Coding-agent sessions contain evidence about how an outer harness performs in practice.\
-Repeated user corrections, unnecessary retries, scope drift, missed verification, ineffective instructions, Skill routing failures, and successful recurring workflows can reveal opportunities to improve the harness that surrounds a coding agent.\
-`agent-harness-retro` provides a structured retrospective layer over that evidence.
+## Capabilities
 
-```text
-coding-agent sessions
-        │
-        ▼
-   agent-sessions
-        │
-        ▼
-agent-harness-retro
-        │
-        ├── findings
-        ├── evidence
-        └── proposals
-                │
-                ▼
-      user-controlled outer harness
+### When to use it
+
+- **Investigate repeated problems:** Find out why you keep giving an agent the same correction and whether the harness needs to change.
+- **Reuse successful workflows:** Identify a useful way of working to document or reuse.
+
+### Example: an outdated test command
+
+Suppose an agent follows a test command in `AGENTS.md`, the command fails, and you have to explain the correct command.\
+In this fictional project, the current testing guide already documents the correct command.
+
+- **Input**
+
+  - **Session evidence:** The relevant conversation and command results obtained through `agent-sessions`.
+  - **Current instructions:** `AGENTS.md`.
+  - **Current procedure:** The testing guide.
+
+- **Possible proposal:** Replace the outdated command in `AGENTS.md` with a link to the testing guide, citing the failed command and the conflicting instructions as evidence.
+
+- **Suggested validation:** On a representative coding task, check whether the agent follows the link and runs the documented test command.
+
+The Skill does not apply the proposed edit; you decide whether to make it.
+
+### Availability
+
+| Item | Status | Details |
+| --- | --- | --- |
+| Retrospective Skill | Implemented | [`outer-harness-retrospective`](skills/outer-harness-retrospective/SKILL.md) analyzes evidence and proposes improvements. |
+| Evidence acquisition script | Implemented | Bundled under the Skill's `scripts/` directory to acquire metadata. |
+| Executable evaluation cases | Available | The Skill's [`evals`](skills/outer-harness-retrospective/evals/README.md) directory contains cases that use fictional data. |
+| Review continuity | Future work | The current Skill does not save findings between reviews. |
+
+## Review targets
+
+### What is an outer harness?
+
+An **outer harness** is the set of instructions, tools, and settings that you or a repository owner control around a coding agent.
+
+- **Instructions:** `AGENTS.md`, `CLAUDE.md`, and other rule files.
+
+- **Skills:** Reusable workflows.
+
+- **Hooks:** Actions that run at specified workflow points.
+
+- **Execution settings:** Settings that you can change to control execution.
+
+- **Permissions:** The operations you can allow an agent to perform.
+
+- **Agent definitions**
+
+  - Custom agents.
+  - Subagents.
+
+- **Integration settings**
+
+  - MCP configuration.
+  - Plugin configuration.
+
+- **Project documentation:** Repository documents that agents read.
+
+- **Behavior checks**
+
+  - Validation scripts.
+  - CI.
+  - Evaluation cases.
+
+The coding-agent provider controls the **built-in harness**, such as its internal context management and tool runtime.\
+This project can report a problem in that layer, but it cannot change the provider's internals.\
+The [Glossary](docs/glossary.md) defines these terms in more detail.
+
+### Application scope
+
+| Scope | Where it applies | Example |
+| --- | --- | --- |
+| Global outer harness | Multiple repositories or sessions. | A shared Skill for preparing pull requests in different projects. |
+| Repository harness | One repository or project. | An `AGENTS.md` file that points to the project's test instructions. |
+
+## Review workflow
+
+A review runs when someone explicitly requests or deliberately starts it.\
+The Skill does not monitor sessions in the background.
+
+### Prepare the inputs
+
+- **Session evidence:** Records selected for a defined review.
+- **Review target:** The repository or global artifact to examine, such as a shared Skill.
+- **Current harness:** Relevant files or observations that identify what was checked.
+
+```mermaid
+flowchart TD
+    source["agent-sessions v2"] --> helper["Acquisition script"]
+    helper --> metadata["Metadata"]
+    source --> excerpts["Selected, privacy-checked excerpts"]
+    metadata --> review["Retrospective Skill"]
+    excerpts --> review
+    scope["Review target and scope"] --> review
+    harness["Current instructions and configuration"] --> review
+    review --> result["Findings and decisions"]
 ```
 
-`agent-harness-retro` does not modify the vendor-controlled built-in harness of Codex, Claude Code, or another coding-agent product.
+### Acquire session evidence
 
-## What is an outer harness?
+The pilot script prepares a limited set of session metadata for the Skill's analysis.
 
-This project uses **outer harness** to mean the user-controlled layer built around a coding-agent product.
+#### Requirements
 
-Depending on scope, it may include:
+- Python 3
+- Git
+- Go 1.26 or later
+- Network access to the public `agent-sessions` repository for a normal run
 
-- `AGENTS.md`, `CLAUDE.md`, and rule files;
-- Skills;
-- Hooks;
-- user-controlled settings and permissions;
-- custom agents or subagent definitions;
-- MCP and plugin configuration;
-- repository documentation used by agents;
-- deterministic validation, CI, and evaluation assets.
+#### Run the script
 
-The exact terminology used by the project is defined in [Glossary](docs/glossary.md).
+##### Normal run
 
-## Scope
+Run from the repository root:
 
-The same retrospective model applies at two primary scopes.
-
-### Global outer harness
-
-User-controlled harness artifacts that apply across multiple repositories or sessions.
-
-### Repository harness
-
-Harness artifacts owned by one repository or project.
-
-The retrospective model for repository harnesses is not tied to a particular repository.\
-Any repository may be a retrospective target.
-
-## Evidence source
-
-`agent-harness-retro` consumes the stable `v2` normalized session evidence contract from [`agent-sessions`](https://github.com/mtk177a/agent-sessions).\
-It does not parse provider-owned Codex, Claude Code, or other raw session formats directly.\
-This keeps provider access and harness interpretation as separate responsibilities.
-
-## Proposal-only Skill
-
-The initial implementation is the [`outer-harness-retrospective`](skills/outer-harness-retrospective/SKILL.md) Skill.\
-It accepts deliberately bounded normalized session evidence, a target scope, and relevant current outer-harness observations.\
-It separates observations, findings, cause hypotheses, scope assessment, and proposals, and it can return `no_change`, `reject`, or `insufficient_evidence` as normal decisions.
-
-The Skill includes a bounded acquisition script under `scripts/`; analysis remains proposal-only and does not persist retrospective state or modify an outer-harness artifact.\
-Its synthetic executable evaluation cases are maintained with the Skill in [`skills/outer-harness-retrospective/evals`](skills/outer-harness-retrospective/evals/README.md).
-
-## Bounded pilot acquisition
-
-The Skill's [`scripts/run.py`](skills/outer-harness-retrospective/scripts/run.py) requires Python 3, Git, and Go 1.26 or later.\
-It fetches `agent-sessions` from its public repository at the commit recorded in `scripts/retro-pilot/internal/pilot/agent-sessions.commit`, builds it in a private temporary directory, and passes the executable to the bundled Go helper.\
-The helper checks the executable's Go build information for that clean commit before reading sessions.\
-The source checkout and executable are removed after the run; no binary is committed or installed globally.
-The upstream source is [`mtk177a/agent-sessions`](https://github.com/mtk177a/agent-sessions) under the MIT license.\
-To update the pin, review the upstream contract and license, change the commit file, and rerun the bundled Go and Python checks before using real sessions.
-
-```text
+```sh
 python3 skills/outer-harness-retrospective/scripts/run.py
 ```
 
-An optional `--config <absolute-path>` selects an existing `agent-sessions` configuration.\
-For offline use, `--agent-sessions-bin <absolute-path>` skips fetching and building but still requires a clean executable at the pinned commit.\
-The helper fixes the start time when it runs, collects all `list` pages for Codex and Claude Code, and considers the previous 14 days.\
-It examines at most ten logical lineage candidates per provider, requires three complete independent lineages from each, and admits at most 2,000 normalized events in total.\
-Incomplete cohort timing, unsupported versions, material omissions, unstable verified versions, and ambiguous source instances produce `insufficient_evidence` rather than a complete cohort.
+##### Offline run
 
-The `v2` event bodies are not automatically redacted.\
-The helper therefore writes only content-free source and event metadata to a private temporary file outside the repository.\
-Standard output contains aggregate status and counts; the private file location is printed to standard error.\
-The operator supplies the metadata, relevant current harness observations, and only deliberately selected, privacy-reviewed excerpts to the Skill, then deletes the temporary file after review.\
-Metadata alone cannot establish a behavioral finding.\
-The helper does not retain retrospective state, post an Issue comment, or change a harness artifact.
+For an offline run, add `--agent-sessions-bin <absolute-path>` to use an existing executable instead of fetching and building one.
 
-## Retrospective model
-
-The initial model separates:
-
-```text
-session evidence
-      ↓
-retrospective analysis
-      ↓
-finding
-      ↓
-scope and likely cause
-      ↓
-improvement proposal
+```sh
+python3 skills/outer-harness-retrospective/scripts/run.py \
+  --agent-sessions-bin /absolute/path/to/agent-sessions
 ```
 
-A finding does not automatically require a harness change.
+The script checks the executable against the commit in `agent-sessions.commit` and requires a clean source build.
 
-Valid outcomes include:
+##### Common options
 
-- improve an existing harness artifact;
-- move a rule to a more appropriate control surface;
-- simplify or remove an existing mechanism;
-- create a new mechanism;
-- retain the current design;
-- reject the finding as insufficiently supported.
+- **Configuration file:** For a normal or offline run, add `--config <absolute-path>` to use an existing `agent-sessions` configuration.
 
-Frequency alone is not sufficient evidence for permanent harness changes.
+#### Evidence selection
 
-## Evidence-backed proposals
+**Review period**
 
-A proposal should preserve enough provenance to explain why it exists.
+The pilot fixes the review period when it starts and uses the preceding 14 days for Codex and Claude Code.
 
-Depending on the finding, this may include:
+**Session grouping**
 
-- source references;
-- verified source versions;
-- representative event references;
-- affected repositories or scopes;
-- recurrence information;
-- alternative explanations;
-- confidence and unresolved uncertainty.
+To avoid counting a resumed or forked conversation as a separate occurrence, the script groups explicitly related sessions into a **logical lineage**.
 
-Historical session content remains untrusted input.
+**Count limits**
 
-## State
+| Counted item | Limit |
+| --- | --- |
+| Candidate lineages examined | At most ten for each provider. |
+| Complete, independent lineages required | At least three from each provider. |
+| Included events, such as messages and tool calls | At most 2,000 in total. |
 
-Unlike `agent-sessions`, `agent-harness-retro` may require private durable state.
+These numbers limit this pilot run; they do not define how many occurrences justify a permanent rule.
 
-Examples include:
+**Insufficient evidence**
 
-- reviewed source versions;
-- findings;
-- evidence references;
-- accepted or rejected proposals;
-- verification state.
+The pilot returns `insufficient_evidence` when it cannot establish a complete selection, for example because:
 
-This state is private runtime data.\
-It is not stored in the public repository and does not include complete copies of raw provider transcripts.\
-The storage format is not part of the initial architecture contract and will be chosen only when implementation requirements are known.
+- **Unknown review period:** The review period cannot be established.
+- **Unsupported response schema:** An `agent-sessions` response is missing `schema_version` or uses a schema other than `v2`.
+- **Missing records:** Required records are missing.
+- **Missing event details:** Required event details are missing.
+- **Unverified source versions:** Source versions cannot be verified.
+- **Changed source versions:** A source version changes during collection.
+- **Mixed recording sources:** Selected records for the same provider come from multiple recording sources (`source_instance`).
+- **Too few lineages:** Too few complete, independent lineages fit within the limits above.
 
-## Materialization
+#### Use the acquisition result
 
-Retrospective analysis and harness modification are separate responsibilities.
+**Output**
 
-The initial design is proposal-oriented.
+The `v2` interface does not guarantee automatic removal of private information from event bodies.\
+The script therefore writes only metadata to a temporary file, without event bodies.
 
-No finding should silently modify:
+| Output | Contents |
+| --- | --- |
+| Private temporary file outside this repository | Evidence metadata, such as source references, versions, event indexes, and event types. |
+| Standard output | Acquisition status.<br>Aggregate counts. |
+| Standard error | The location of the private metadata file. |
 
-- instructions;
-- Skills;
-- Hooks;
-- settings;
-- CI;
-- evaluation assets;
-- other harness artifacts.
+**Handoff steps**
 
-If materialization is implemented, a user must explicitly approve the proposed change before an external harness artifact is modified.
+1. **Supply the metadata:** Pass the script's metadata file to the Skill.
 
-## Design principles
+2. **Supply current harness information:** Provide relevant files or observations that identify what was checked.
 
-### Evidence before rules
+3. **Select excerpts:** Choose the session excerpts to use in the analysis.
 
-Do not create permanent harness rules from isolated anecdotes when the evidence does not justify generalization.
+4. **Check privacy:** Check the selected excerpts for private information.
 
-### Correct scope before modification
+5. **Supply the excerpts**
 
-Determine whether a problem belongs to:
+   Pass the checked excerpts to the Skill separately from the metadata.\
+   Metadata alone cannot show what an agent did or why.
 
-- the built-in harness;
-- the global outer harness;
-- a repository harness;
-- one Skill or Hook;
-- the underlying project implementation;
-- or no persistent harness mechanism at all.
+6. **Remove the temporary file:** Delete the metadata file after the review.
 
-Only user-controlled outer-harness targets are candidates for modification by this project.
+### Read the analysis result
 
-### Prefer the appropriate control surface
+#### Analysis records
 
-Natural-language instructions are not always the correct fix.
+- **Observation:** What the records or checked files directly show.
+- **Finding:** What problem or useful pattern those observations support, and why it matters.
+- **Cause hypothesis:** What might explain the finding, including uncertainty.
+- **Scope assessment:** Where the cause or response belongs, such as a repository instruction or a provider-controlled feature.
+- **Proposal:** A possible change, its evidence, and a way to check its effect.
 
-A finding may instead belong in:
+#### Decision outcomes
 
-- a Skill;
-- a Hook;
-- a deterministic script;
-- CI or tests;
-- user-controlled settings;
-- project documentation;
-- another existing source of truth.
+| Outcome | Meaning |
+| --- | --- |
+| `proposal` | The evidence supports a proposed response. |
+| `no_change` | No change is needed. |
+| `reject` | A suggested response should be rejected. |
+| `insufficient_evidence` | The evidence does not support a decision. |
 
-### Proposal before materialization
+#### Proposed changes
 
-Analysis must remain useful without requiring automatic writes.
+- **Improve:** Revise an existing harness artifact.
+- **Move:** Transfer a rule to a mechanism better suited to the problem.
+- **Simplify:** Reduce the complexity of an existing mechanism.
+- **Remove:** Delete an unnecessary mechanism.
+- **Create:** Add a new mechanism.
 
-### No continuous candidate firehose
+### Approval before changes
 
-The default architecture does not continuously generate findings from every tool call or session event.\
-Retrospective analysis occurs when explicitly requested or otherwise deliberately invoked.
+A request to review a harness does not authorize changes to its files or settings.\
+Any future feature that applies proposals must obtain explicit user approval before modifying an external harness.
 
-### Minimize retained session data
+## Review criteria
 
-Store references and derived evidence rather than persistent copies of complete transcripts.
+### Assess the evidence
 
-## Public/private boundary
+Compare the session evidence with current instructions and tools before proposing a change.
 
-This is a public repository.
+An isolated example does not justify a permanent rule unless the evidence supports applying it beyond that example.\
+Frequency alone does not justify a permanent rule.
 
-Public artifacts describe generic product behavior only.
+### Choose the response scope
 
-They do not contain:
+Match the response scope to the cause of the finding:
 
-- private repository names or links;
-- private Issue or Project references;
-- personal or employer-specific context;
-- real session contents;
-- private harness contents;
-- real usernames, hostnames, or machine-specific paths.
+- **Provider:** The provider-controlled built-in harness.
+- **Global harness:** Artifacts shared across repositories.
+- **Repository harness:** Artifacts owned by one repository.
+- **Individual artifact:** One existing harness artifact, such as a Skill or Hook.
+- **Project implementation:** The project's code or other implementation.
+- **One-off response:** An action limited to the current situation.
+- **No change:** No permanent harness mechanism is needed.
 
-Requirements learned from private usage must be expressed as general product requirements before they enter this repository.
+A finding about a provider-controlled problem can be reported without proposing an outer-harness workaround.
 
-## Non-goals
+### Choose the response mechanism
 
-`agent-harness-retro` is not:
+Adding natural-language instructions is not always the best response.
 
-- a coding-agent session parser;
-- a replacement for `agent-sessions`;
-- a provider telemetry collector;
-- a universal memory system;
-- a background monitoring daemon;
-- an automatic prompt tuner;
-- a system that rewrites harness artifacts after every session;
-- a replacement for provider-owned built-in harness engineering;
-- a general project architecture reviewer;
-- a system that treats every repeated action as a candidate Skill.
+| Need | Mechanism to consider |
+| --- | --- |
+| A stable behavioral principle needs to apply across tasks. | Instructions. |
+| A reusable task needs conditional judgment or multiple steps. | A Skill. |
+| An action must run at a specific workflow point. | A Hook. |
+| A condition can be checked without model judgment. | A deterministic validation script. |
+| Code changes must preserve project requirements. | Tests. |
+| Project checks must run automatically when code changes. | CI. |
+| Execution behavior needs to change. | Execution settings. |
+| The operations allowed for an agent need to change. | Permissions. |
+| Project information is missing or outdated. | The canonical project documentation. |
+
+Prefer updating an existing appropriate mechanism over creating a parallel one.
+
+### Explain the proposal evidence
+
+Select evidence details to suit the finding:
+
+- **Source references:** Which sessions support the finding.
+- **Verified source versions:** Which versions of those records were checked.
+- **Event references:** Which messages or tool events show the behavior.
+- **Affected scope:** Which repositories, instructions, or tools are involved.
+- **Recurrence:** Whether the behavior occurred in independent interactions or repeated attempts within one interaction.
+- **Alternative explanations:** What else might account for the behavior.
+- **Confidence:** How strongly the evidence supports the conclusion.
+- **Uncertainty:** What remains unknown.
+
+For a proposed rule, explain why it is needed, where it applies, and what it is expected to improve.
+
+## Information handling
+
+### Session record source
+
+[`agent-sessions`](https://github.com/mtk177a/agent-sessions) reads coding-agent records and presents them in a common format.\
+`agent-harness-retro` uses its stable `v2` interface to read messages, tool activity, and information about their sources.\
+It does not parse provider-specific raw formats or collect provider telemetry.
+
+### Instructions in past conversations
+
+Past session content is evidence to examine, not instructions for the reviewing agent to follow.
+
+### Keep review data private
+
+Do not add real session contents, private harness files, or private findings to this public repository.\
+Use synthetic data for examples and tests.\
+The [public information boundary](AGENTS.md#public-information-boundary) lists the full publication rules.
+
+The [Architecture](docs/architecture.md#private-retrospective-state) describes possible future records and their storage constraints.
+
+## Acquisition script maintenance
+
+### Launcher operation
+
+During a normal run, the [`run.py`](skills/outer-harness-retrospective/scripts/run.py) launcher:
+
+1. **Fetch source:** Downloads the commit recorded in [`agent-sessions.commit`](skills/outer-harness-retrospective/scripts/retro-pilot/internal/pilot/agent-sessions.commit).
+
+2. **Build:** Creates an executable in a private temporary directory.
+
+3. **Start the helper:** Runs the bundled Go helper with the executable.
+
+4. **Verify the build**
+
+   The helper checks the executable's Go build information:
+
+   - **Commit:** It matches the recorded commit.
+   - **Source tree:** It was unchanged when built.
+
+5. **Remove temporary files:** Deletes the downloaded source and built executable after the run.
+
+The launcher does not install a global executable.\
+The upstream source is [`mtk177a/agent-sessions`](https://github.com/mtk177a/agent-sessions), under the MIT license.
+
+### Update the pinned version
+
+1. **Review the upstream changes**
+
+   - **Interface:** Check changes to the public contract.
+   - **License:** Check changes to the license.
+
+2. **Change the pinned commit:** Update [`agent-sessions.commit`](skills/outer-harness-retrospective/scripts/retro-pilot/internal/pilot/agent-sessions.commit).
+
+3. **Verify the change**
+
+   Before using real sessions, run the checks in [Evaluation and Skill audit](docs/evaluation.md):
+
+   - Go checks.
+   - Python checks.
 
 ## Documentation
 
