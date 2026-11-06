@@ -1,453 +1,325 @@
 # Architecture
 
-## Purpose
+`agent-harness-retro` uses coding-agent session evidence to decide whether a user-controlled outer harness needs to change.
 
-`agent-harness-retro` retrospectively evaluates user-controlled coding-agent harnesses using normalized session evidence.
+## Responsibility boundaries
 
-Its responsibilities are limited to:
+| Owner | Responsibility |
+| --- | --- |
+| Coding-agent provider | Manage raw session records and the built-in harness. |
+| `agent-sessions` | Provide read-only access to session evidence through a provider-neutral public contract. |
+| `agent-harness-retro` | Select evidence, record findings, assess causes, and propose improvements. |
+| Harness owner | Manage the harness files and make the final decision to change them. |
 
-- selecting relevant session evidence;
-- observing recurring or material behavior;
-- relating behavior to the current outer harness;
-- recording findings;
-- determining likely scope and control surface;
-- producing evidence-backed improvement proposals;
-- tracking retrospective decisions when durable state is required.
+Keep session evidence, retrospective findings, and applied harness changes separate, as defined in [ADR 0002](decisions/0002-separate-session-evidence-findings-and-materialization.md).\
+Do not use retrospective findings as a second source of harness configuration.
 
-Provider-specific session acquisition is outside this boundary.
+### Review target
 
-## System boundary
+The target is the [user-controlled outer harness](decisions/0001-target-the-user-controlled-outer-harness.md).
 
-```text
-Provider-owned sessions
-        │
-        ▼
-   agent-sessions
-        │
-        │ normalized evidence
-        ▼
-agent-harness-retro
-──────────────────────────────────
+- **Global scope:** User-controlled files and mechanisms shared across projects.
+- **Repository scope:** Files and mechanisms owned by one repository or project.
 
-evidence selection
-current harness observation
-retrospective analysis
-findings
-scope resolution
-proposal generation
-decision state
+Both scopes use the same retrospective model.\
+The [README](../README.md#review-targets) lists examples of the files and mechanisms in each scope.
 
-        │
-        ▼
+This tool does not modify the provider-controlled built-in harness.\
+A finding can report a provider limitation without proposing an outer-harness workaround.
 
-User-controlled outer harness
-──────────────────────────────────
+## Current implementation
 
-global outer harness
-repository harness
-```
+### Components
 
-| Actor                 | Owns                                                          |
-| --------------------- | ------------------------------------------------------------- |
-| Coding-agent provider | Raw session records and built-in harness                      |
-| `agent-sessions`      | Provider-neutral read-only session access                     |
-| `agent-harness-retro` | Retrospective findings, evidence relationships, and proposals |
-| Harness owner         | Actual outer-harness artifacts and final change decisions     |
+| Component | Role |
+| --- | --- |
+| [Retrospective Skill](../skills/outer-harness-retrospective/SKILL.md) | Analyze evidence and relevant current harness files, then report findings and decisions. |
+| [Python launcher](../skills/outer-harness-retrospective/scripts/run.py) | Prepare a pinned `agent-sessions` executable in a private temporary directory, then run the acquisition helper. |
+| [Go acquisition helper](../skills/outer-harness-retrospective/scripts/retro-pilot) | Select a bounded set of session sources and produce content-free metadata. |
 
-## Target boundary
+The Skill accepts supplied `agent-sessions` evidence or invokes the bundled acquisition script.\
+It needs a bounded review scope, evidence with provenance and completeness information, and observations of the relevant current harness.
 
-### Built-in harness
+The Skill stops at a report.\
+It does not save private retrospective state or apply proposals to harness files.
 
-The vendor-controlled system that turns a model into a coding-agent product.
+### Acquisition flow
 
-Examples may include provider-owned:
+1. **Check the executable**
 
-- system prompts;
-- context management;
-- internal orchestration;
-- tool runtime;
-- product-internal memory;
-- internal routing.
+   The launcher fetches and builds the pinned public `agent-sessions` commit.\
+   Before session access, the helper checks the executable's Go build information for the expected module path, revision, and clean build state.\
+   An executable supplied for offline use must pass the same check.
 
-`agent-harness-retro` may observe behavior that appears related to the built-in harness, but it does not modify that layer.\
-A built-in limitation may be reported as such rather than converted into an inappropriate outer-harness workaround.
+2. **Check the response contract**
 
-### Outer harness
+   The helper uses only the public `list`, `show`, `events`, and `verify` JSON commands.\
+   It checks that the schema version is `v2` before interpreting response data.\
+   `agent-sessions` owns the exact schema; this repository does not parse provider-native transcript formats.
 
-The user-controlled layer surrounding the built-in coding-agent harness.\
-This is the primary target of `agent-harness-retro`.
+3. **Establish the review set**
 
-### Global outer harness
+   The helper reads every page of the source listing, then selects sources by normalized interaction time.\
+   It groups sources with explicit relationships into logical lineages and checks candidates within the limits below.
 
-User-controlled artifacts intended to affect multiple repositories or projects.
+4. **Read selected sources**
 
-Possible artifacts include:
+   The helper first accepts the required minimum of complete independent lineages from each provider, then adds further candidates by time.\
+   For each accepted source, it reads all event pages.\
+   The verified source versions before and after the read must match.
 
-- global instructions;
-- global Skills;
-- user Hooks;
-- user-controlled settings and permissions;
-- reusable agent definitions;
-- shared MCP or plugin configuration.
+5. **Write the metadata handoff**
 
-### Repository harness
+   The helper discards recorded content and free-form metadata after event validation and counting.\
+   It writes content-free source and event summaries to a private temporary file outside the repository.
 
-Agent-facing control surfaces owned by one repository or project.
+### Acquisition limits
 
-Possible artifacts include:
+These limits apply to the bundled pilot helper; they do not define a universal retrospective sample size.
 
-- repository instructions;
-- repository-local Skills;
-- repository Hooks and settings;
-- agent-facing project documentation;
-- deterministic repository commands;
-- tests and CI;
-- evaluation assets.
+| Limit | Value |
+| --- | --- |
+| Required providers | Codex and Claude Code |
+| Review period | 14 days |
+| Candidate lineages examined | At most 10 per provider |
+| Required independent lineages | At least 3 complete lineages per provider |
+| Total events | At most 2,000 |
 
-The same retrospective model applies to global and repository-local scopes.
+To identify all eligible candidates, the helper needs a complete listing without material omissions.
 
-## Input contract
+**Known completeness gap**
 
-`agent-harness-retro` consumes session evidence through `agent-sessions`.
+The [event validator](../skills/outer-harness-retrospective/scripts/retro-pilot/internal/pilot/contract.go) can accept truncated or omitted event bodies.\
+It also does not check whether JSON-formatted body text contains valid JSON.\
+Acquisition can therefore succeed even when content is incomplete.
 
-It must not depend directly on provider-native Codex, Claude Code, or other raw transcript formats.
+### Behavioral evidence
 
-The implemented Skill accepts supplied evidence shaped by the stable `agent-sessions` `v2` contract, including:
+The metadata handoff records the selected sources, checked versions, and event counts.\
+It does not contain enough information to support findings about agent behavior.
 
-- stable source reference;
-- provider;
-- source instance;
-- source version;
-- session relationship;
-- ordered messages and tool events;
-- completeness and omission information.
+To analyze behavior, the Skill also needs deliberately selected excerpts that have been checked for private information, or other bounded observations.\
+Link each excerpt or observation to its verified source version and event indexes.\
+The acquisition helper does not analyze findings, inspect the current harness, or choose a response.
 
-The exact upstream schema is owned by `agent-sessions`.
+## Retrospective analysis
 
-## Implemented proposal-only Skill
+### Review scope
 
-The initial implementation is an agent-facing Skill that consumes normalized evidence obtained through its bundled acquisition script or supplied separately, rather than parsing provider-owned session formats directly.\
-Its required inputs are a deliberately bounded evidence set, the requested target scope, and relevant current outer-harness observations.
+By default, explicitly start each review and limit its scope.
 
-The Skill validates provenance and completeness, groups explicitly related sources into logical lineages, distinguishes within-lineage retry from cross-session recurrence, and then produces findings and proposal-only decisions.\
-Resume observations under the same source reference and explicit parent or fork relationships do not create independent recurrence.\
-Ambiguous relationships remain uncertain rather than being inferred from similar content.
+- **Selected sessions:** Review evidence explicitly selected for the review.
+- **Repository review:** Review one repository within a time range.
+- **New source versions:** If state is added to support continuity between reviews, review versions not covered by a previous retrospective.
+- **One harness artifact:** Review evidence relevant to that artifact.
 
-The implemented result boundary separates:
+A review can use another scope if its bounds are deliberately defined.\
+Do not create a review item for every observed event and let those items accumulate.
 
-```text
-observation
-      │
-      ▼
-finding
-      │
-      ▼
-cause hypothesis
-      │
-      ▼
-scope and routing assessment
-      │
-      ▼
-proposal | no change | reject | insufficient evidence
-```
+### Evidence assessment
 
-The Skill can invoke its bundled acquisition script when local session evidence is requested.\
-It does not provide private continuity state or automatic materialization, and its proposal-only authority boundary remains unchanged.
+The analyzer checks the provenance and completeness of supplied evidence before using it for a finding.
 
-## Bounded pilot helper
+| Evidence detail | Purpose |
+| --- | --- |
+| Provider, recording source instance, and stable source reference (`source_ref`) | Identify where the evidence came from. |
+| Verified source version | Identify the version that was reviewed. |
+| Bounded, ordered messages or tool events | Support the claimed behavior without copying a complete transcript. |
+| Explicit session relationships | Distinguish related records from independent occurrences. |
+| Completeness and omission information | Identify limits on the conclusions. |
 
-The Skill bundles a Python launcher and a Go helper under `skills/outer-harness-retrospective/scripts`.\
-The launcher fetches a pinned `agent-sessions` source commit from its public repository and builds it in a private temporary directory; an offline executable override must pass the same build check.\
-The helper invokes only the public `agent-sessions` `list`, `show`, `events`, and `verify` JSON commands.\
-It accepts only an executable whose Go build information identifies the clean pinned upstream commit.\
-It validates the `v2` schema before interpreting response data and rejects incomplete cohorts or candidate lineages.\
-Because `v2` bodies are unredacted, the helper discards recorded content and free-form metadata after validating and counting events.
+- **Related records:** A resume under the same source reference or an explicit parent, fork, or subagent association does not count as independent recurrence.
+- **Unproven independence:** When explicit relationships do not establish independence, record it as uncertain; different source instances alone do not prove independence.
+- **Text similarity:** Do not merge records into one lineage merely because their text is similar.
+- **Occurrence counts:** Count retries within a logical lineage separately from recurrence across independent lineages, and report both.
 
-The helper collects every listing page before fixing the 14-day cohort from normalized interaction times.\
-It groups explicit relationships into logical lineages, examines at most ten candidate lineages per provider, and requires three complete independent lineages per provider before adding further candidates by time.\
-For each adopted source it checks verified versions before and after complete event pagination, with a total limit of 2,000 events.\
-An incomplete listing or material omission cannot establish an exhaustive cohort.
+Frequency alone does not justify a permanent harness rule.\
+A single high-impact event or contract violation can also support a finding when the evidence is sufficient.
 
-Its bounded content-free metadata bundle is a temporary private handoff to the Skill, not persistent retrospective state.\
-Behavioral analysis additionally requires deliberately selected, privacy-reviewed excerpts or other bounded observations linked to verified source versions and event indexes.\
-The metadata bundle alone supports coverage accounting, not conclusions about agent behavior.\
-The helper does not interpret findings, inspect the current harness, select a control surface, or materialize a proposal.
+### Current harness check
 
-## Current harness observation
+Inspect only the files relevant to the requested scope or candidate finding.
 
-A retrospective is not performed against session evidence alone.
+- **Existing guidance:** Determine whether the expected behavior is already described.
+- **Workflow coverage:** Determine whether a relevant Skill should have triggered.
+- **Automated checks:** Determine whether an existing Hook or deterministic check covers the failure.
+- **Current status:** Determine whether the problem has already been addressed.
+- **Source of truth:** Determine whether a proposed change would duplicate existing guidance.
 
-The analyzer also needs enough current harness context to determine whether:
+Mark a current artifact as checked only if the analyzer inspected it or received its checked version.\
+Do not assume that its current content was present during the session.
 
-- relevant guidance already exists;
-- a Skill should have triggered;
-- a Hook or deterministic check already covers the failure;
-- a finding has already been addressed;
-- a proposed change would duplicate another source of truth.
+### Findings
 
-Harness observation should remain target-scoped.\
-Do not load every global and repository artifact merely because it exists.\
-Read only the artifacts relevant to a candidate finding or the requested retrospective scope.
+A finding records behavior supported by evidence and explains why it matters.\
+It can identify a problem or a successful workflow worth reusing.\
+It does not specify a solution.
 
-## Retrospective pipeline
+- **Observation:** What happened.
+- **Evidence:** The source references and bounded events that support the observation.
+- **Affected scope:** Where the behavior has an effect.
+- **Harness context:** The relevant current files or checked observations.
+- **Uncertainty:** Material gaps, alternative explanations, or unverified assumptions.
 
-The conceptual pipeline is:
+Keep the observed behavior separate from a hypothesis about its cause.\
+Do not adopt a fixed, universal taxonomy of findings until real reviews show that it is needed.
+
+### Response selection
+
+Before choosing a mechanism, determine the likely cause and where to address it.
 
 ```text
-select evidence
-      │
-      ▼
-observe behavior
-      │
-      ▼
-identify finding
-      │
-      ▼
-check current harness
-      │
-      ▼
-resolve likely cause and scope
-      │
-      ▼
-compare control surfaces
-      │
-      ▼
-produce proposal or no-change decision
+Possible response scopes
+├── Provider-controlled built-in harness
+├── Global outer harness
+├── Repository harness
+├── One existing Skill or Hook
+├── Underlying project implementation or documentation
+└── One-off session context
 ```
 
-The pipeline is conceptual rather than a requirement for one implementation process.
+Do not use a repository-local observation to justify a global rule without evidence from other contexts.
 
-## Findings
+Compare the relevant [response mechanisms](../README.md#choose-the-response-mechanism), such as an instruction, Skill, Hook, test, setting, permission, or project document.\
+Prefer an existing mechanism that fits the need over a new one with the same role.\
+Choose based on the finding; a failure does not always require another instruction.
 
-A finding records a material observation supported by session evidence.
+### Report
 
-Possible examples include:
+Keep the finding, cause hypothesis, and proposed response distinct.\
+The [Skill's report contract](../skills/outer-harness-retrospective/SKILL.md#report-contract) defines which fields to include.
 
-- recurring user correction;
-- repeated unnecessary retry;
-- scope drift;
-- verification gap;
-- ineffective instruction;
-- Skill routing or trigger failure;
-- inappropriate delegation;
-- recurring successful workflow;
-- duplicated or conflicting harness guidance.
+| Decision | Meaning |
+| --- | --- |
+| `proposal` | There is enough evidence to propose a response for the owner to consider. |
+| `no_change` | The finding is supported, but no persistent response is needed or the current mechanism is sufficient. |
+| `reject` | Evidence contradicts the response, or it duplicates an existing mechanism, has the wrong scope, or goes beyond the permitted change scope. |
+| `insufficient_evidence` | There is not enough evidence to establish the finding or make the required decision. |
 
-The initial implementation should not freeze a broad universal taxonomy before real retrospective use demonstrates that one is necessary.
+Rejecting a proposal does not erase the underlying finding.
 
-### Finding requirements
+Each proposal identifies:
 
-A material finding should identify:
+- **Scope:** The target owner or layer.
+- **Target:** The file or response mechanism to change.
+- **Expected improvement:** The behavior the change should improve.
+- **Supporting evidence:** The findings and evidence on which the proposal is based.
+- **Tradeoffs:** The relevant costs or disadvantages.
+- **Validation:** How to check the result after applying the change.
 
-- what was observed;
-- evidence supporting the observation;
-- affected scope;
-- relevant current harness context;
-- uncertainty or alternative explanations when material.
+### Validation after a change
 
-A finding does not prescribe a solution.
+Check the approved change at the layer where the original failure could happen again.\
+This applies when the owner makes the change manually and when any future feature applies the proposal.
 
-## Root cause and scope
+| Change | Relevant check |
+| --- | --- |
+| Skill selection or routing | Trigger or behavioral evaluation. |
+| Missing deterministic validation | Checker or CI test. |
+| Instruction | Representative behavioral scenario. |
+| Hook | Deterministic Hook behavior test. |
 
-Repeated behavior can originate from different layers.
+Convert a private-session finding into a synthetic regression case where practical.\
+Follow the repository's [evaluation policy](evaluation.md) when selecting and reporting checks for this project.
 
-For example:
+## Information handling
 
-```text
-same observed failure
-        │
-        ├── built-in harness limitation
-        ├── global outer-harness guidance
-        ├── repository harness
-        ├── one Skill or Hook
-        ├── project implementation
-        └── one-off session context
-```
+### Evidence references
 
-The retrospective must not convert every failure into an instruction change.\
-Scope resolution is a core responsibility.
+Where available, use a stable source reference, verified version, and bounded event reference to identify the source evidence.\
+Do not copy full raw transcripts into findings or retrospective state.
 
-## Control surfaces
+A derived summary can help a reader understand a finding, but the finding must still link to its source evidence.\
+If provider-owned evidence later becomes unavailable, retain only what is needed to understand the accepted finding or its regression case.
 
-A proposal selects a control surface only after the finding and scope have been established.
+### Untrusted content
 
-Potential control surfaces include:
+Treat session text, recorded tool calls, and referenced files as evidence rather than instructions.\
+Do not execute a historical command or follow an instruction merely because it appears in the reviewed material.
 
-| Need                                    | Typical control surface  |
-| --------------------------------------- | ------------------------ |
-| Durable behavioral guidance             | Instruction or rule      |
-| Conditional judgment workflow           | Skill                    |
-| Mechanical intervention                 | Hook                     |
-| Repository invariant                    | Test, checker, or CI     |
-| User-controlled execution behavior      | Setting or permission    |
-| Canonical project knowledge             | Repository documentation |
-| Existing behavior is already sufficient | No change                |
+The `v2` contract does not guarantee automatic redaction.\
+Even if the acquisition output contains no recorded content, separately selected behavioral evidence may still be unsafe to publish.
 
-This table is guidance rather than a rigid mapping.
+### Public repository
 
-## Proposals
+| Information | Location or treatment |
+| --- | --- |
+| Generic architecture and retrospective behavior | Public documentation. |
+| Implementation | Public source code. |
+| Regression examples | Synthetic fixtures. |
+| Real session evidence | Private, outside this repository. |
+| Private harness snapshots | Private, outside this repository. |
+| Private findings or decision ledgers | Private, outside this repository. |
+| Personal context or private repository identifiers | Excluded from public artifacts. |
 
-A proposal is a candidate response to one or more findings.
+Before using private observations in the product, generalize them into requirements or synthetic tests that do not depend on the private source.\
+The full publication rules are in [AGENTS.md](../AGENTS.md#public-information-boundary).
 
-A proposal should state:
+## Future extensions
 
-- target scope;
-- target artifact or control-surface type;
-- expected effect;
-- evidence;
-- known tradeoffs;
-- validation or evaluation required after materialization.
+### Private retrospective state
 
-The system must support a no-change outcome.
+The current Skill does not persist retrospective state.\
+If later reviews need saved state, `agent-harness-retro` would manage it.\
+Keep it separate from `agent-sessions` and provider-owned transcripts.
 
-Repeated behavior alone is not enough to justify a proposal.
+| Possible record | Purpose |
+| --- | --- |
+| Reviewed source versions | Identify evidence already reviewed. |
+| Findings | Retain supported observations and their importance. |
+| Evidence relationships | Trace a finding to its source evidence. |
+| Proposal decisions | Retain the owner's response to a proposal. |
+| Application status | Track whether an approved proposal was applied. |
+| Verification status | Track checks of the resulting change. |
 
-## Evidence model
+State must remain private, user-local by default, and outside the public repository.\
+Choose a storage format only after the required queries and updates are known.\
+This design does not specify a database.
 
-A finding should reference source evidence rather than duplicate complete transcripts.
+Update state only when a retrospective or decision operation is deliberately run.\
+The system should not write state while idle.
 
-Where practical, evidence should use:
-
-- source reference;
-- verified source version;
-- bounded event reference.
-
-A derived summary may be retained for usability but does not replace the underlying evidence relationship.
-
-If provider-owned evidence is later unavailable, retained evidence should remain the minimum needed to understand the accepted finding or regression contract.
-
-## Private retrospective state
-
-Unlike `agent-sessions`, `agent-harness-retro` may require persistent consumer-owned state.
-
-Potential state includes:
-
-- source versions already reviewed for retrospective purposes;
-- findings;
-- evidence relationships;
-- proposal decisions;
-- materialization state;
-- verification state.
-
-This state is:
-
-- private;
-- user-local by default;
-- separate from the public repository;
-- separate from provider-owned transcripts;
-- separate from `agent-sessions`.
-
-The initial architecture does not prescribe SQLite or another specific storage format.\
-A storage implementation should be chosen only when the required query and update patterns are known.
-
-### Write behavior
-
-Runtime state is updated only through deliberate retrospective or decision operations.
-
-The architecture does not require:
+Continuity state does not require:
 
 - background synchronization;
-- continuous event ingestion;
 - a file watcher;
-- per-tool-call candidate persistence;
-- periodic session analysis.
+- continuous event ingestion;
+- per-tool-call finding storage;
+- periodic analysis.
 
-Idle write activity should remain zero.
+### Proposal application
 
-## Analysis cadence
+If a feature to apply proposals is added, keep it separate from analysis.
 
-The default model is explicit retrospective analysis.
+1. **Approval:** Get explicit user approval for the proposed write.
+2. **Target authority:** Follow the target repository's instructions and permissions.
+3. **Source of truth:** Change the actual source file rather than generated deployment output.
+4. **Verification:** Run the target's normal checks and the proposal's validation plan.
 
-A retrospective may target:
+### Excluded capabilities
 
-- selected sessions;
-- a repository and time range;
-- new source versions since the previous retrospective;
-- evidence related to one harness artifact;
-- another deliberately bounded scope.
+The current architecture does not include the following capabilities; each needs its own supporting evidence before it is added.
 
-The system does not continuously create a candidate finding for every observed event.\
-This avoids converting normal agent activity into an ever-growing review queue.
+- **Provider integration**
 
-## Materialization boundary
+  - Provider-specific transcript parsers.
+  - Provider telemetry.
 
-Retrospective analysis and outer-harness modification are separate layers.
+- **Unattended operation**
 
-```text
-finding
-   │
-   ▼
-proposal
-   │
-   ▼
-explicit approval
-   │
-   ▼
-materialization
-   │
-   ▼
-validation / evaluation
-```
+  - Continuous session monitoring.
+  - Automatic prompt optimization.
+  - Autonomous harness rewriting.
 
-The initial system may stop at proposal generation.
+- **General-purpose assessment**
 
-If materialization support is later implemented:
+  - A universal agent-quality score.
+  - A universal taxonomy of agent failures.
+  - A general code review system.
+  - A general repository architecture audit.
 
-- explicit user approval is required;
-- the target repository remains authoritative;
-- target repository instructions and permissions apply;
-- writes use the target's real source of truth rather than generated deployment output;
-- the resulting change is validated through the target's normal mechanisms.
+- **Hosted product features**
 
-Materialization must not silently rewrite a global or repository harness.
-
-## Evaluation after change
-
-A retrospective-derived change should be verified at the layer where the failure can recur.
-
-Examples include:
-
-- Skill routing failure → Skill trigger or behavior evaluation;
-- missing deterministic validation → checker or CI test;
-- instruction failure → representative behavioral scenario;
-- Hook change → deterministic Hook behavior test.
-
-When practical, a private session finding should be converted into a synthetic regression case rather than embedding private evidence into a public repository.
-
-## Public/private boundary
-
-This public repository contains:
-
-- generic architecture;
-- generic retrospective behavior;
-- synthetic test fixtures;
-- public implementation.
-
-It does not contain:
-
-- real session evidence;
-- private harness snapshots;
-- private finding ledgers;
-- personal context;
-- private repository identifiers.
-
-Private observations may influence the product only after being generalized into standalone requirements or synthetic tests.
-
-## Non-goals
-
-The architecture does not currently attempt to provide:
-
-- provider-specific session parsing;
-- continuous session monitoring;
-- provider telemetry;
-- automatic prompt optimization;
-- autonomous harness rewriting;
-- a universal scoring model for agent quality;
-- a universal taxonomy of agent failures;
-- a general-purpose code review system;
-- a general repository architecture audit;
-- cloud synchronization;
-- a web dashboard;
-- a multi-user collaboration service.
-
-These capabilities require independent evidence before being added.
+  - Cloud synchronization.
+  - A web dashboard.
+  - A multi-user collaboration service.
