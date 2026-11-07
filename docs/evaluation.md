@@ -1,22 +1,84 @@
-# Evaluation and Skill Audit
+# Evaluation policy
 
-This policy governs evaluation of the repository's maintained Skills and changes that affect retrospective decisions.
-It adapts the change-scoped evaluation rules used by [`mtk177a/skills` Issue #49](https://github.com/mtk177a/skills/issues/49) to this repository's public and private evidence boundary.
+This policy applies to the repository's maintained Skills and changes that affect retrospective decisions.\
+It applies the [change-scoped evaluation rules from `mtk177a/skills` Issue #49](https://github.com/mtk177a/skills/issues/49) within this repository's public and private evidence boundary.
 
-## Audit decision
+- [Audit a Skill](#audit-a-skill)
+- [Select evaluation work](#select-evaluation-work)
+- [Prepare cases](#prepare-cases)
+- [Run static checks](#run-static-checks)
+- [Run model evaluations](#run-model-evaluations)
+- [Record results](#record-results)
 
-For each material Skill audit, record the target revision and working-tree state, the intended behavior, affected users and client, the guidance surfaces and their authority, observed evidence, findings, alternatives, and remaining uncertainty.
-Check responsibility and scope, selection triggers and coexistence, source precedence, evidence quality, safety, context cost, portability, and maintenance only where they matter to the Skill.
-Check the English canonical Skill and the naturalness and semantic fidelity of its Japanese reference independently, even if the English text did not change.
-Classify each issue as `change_required`, `no_change`, `separate_issue`, or `unverified`; support every material finding with evidence, impact, confidence, and a way to falsify it.
-Do not turn a static audit into a claim about model behavior.
+## Audit a Skill
+
+### Audit record
+
+For each material Skill audit, record:
+
+| Field | What to record |
+| --- | --- |
+| Revision | The version being audited. |
+| Working tree | The working-tree state. |
+| Intended behavior | What the Skill should do. |
+| Users | Who the Skill affects. |
+| Client | The client that uses the Skill. |
+| Guidance surfaces | Where the relevant instructions are defined. |
+| Authority | Which instructions have authority. |
+| Evidence | What was observed. |
+| Findings | The supported problems or useful patterns. |
+| Alternatives | Other responses considered. |
+| Uncertainty | What remains unknown. |
+
+### Audit checks
+
+Check only the aspects that matter to the Skill:
+
+- **Responsibility:** What the Skill owns.
+- **Scope:** Where it applies.
+- **Selection:** When it should be selected.
+- **Coexistence:** How it works alongside other Skills.
+- **Source precedence:** Which source takes priority.
+- **Evidence quality:** How well the evidence supports the findings.
+- **Safety:** The relevant safety concerns.
+- **Context cost:** The context the Skill requires.
+- **Portability:** Its use across clients or environments.
+- **Maintenance:** The work needed to maintain it.
+
+Review the canonical English Skill separately from its Japanese reference.\
+Check the reference for faithful meaning and natural Japanese, even if the English text has not changed.
+
+### Audit results
+
+Classify each issue:
+
+| Classification | Meaning |
+| --- | --- |
+| `change_required` | A change is needed. |
+| `no_change` | No change is needed for this issue. |
+| `separate_issue` | Handle the issue separately from the current work. |
+| `unverified` | The issue has not been verified. |
+
+For each material finding, include:
+
+- **Evidence:** What supports the finding.
+- **Impact:** Why it matters.
+- **Confidence:** How strongly the evidence supports it.
+- **Falsification:** A check that could disprove it.
+
+Do not treat a static audit as confirmation of actual model behavior.
 
 ## Select evaluation work
 
-Identify the changed responsibility, a plausible failure, and the observation that would detect it before selecting cases.
-Use the least evidence needed for that decision:
+Before selecting cases, identify:
 
-| Change | Default path |
+- **Changed responsibility:** What the change affects.
+- **Possible failure:** What could go wrong.
+- **Detection:** What observation would reveal the failure.
+
+Use the least evidence needed for the decision.
+
+| Change | Default evaluation path |
 | --- | --- |
 | Documentation, format, or meaning-preserving text | `static-only` |
 | Skill instructions, output contract, or safety boundary | `targeted-candidate` |
@@ -24,35 +86,159 @@ Use the least evidence needed for that decision:
 | Known regression, major redesign, or ambiguous candidate result | `baseline-comparison` |
 | Explicit client or environment support claim | `target-environment` |
 
-Use a baseline, a no-Skill comparison, repetition, or another client only if its result could change the decision.
+Add any of the following only if its result could change the decision:
+
+- A baseline comparison.
+- A comparison without the Skill.
+- Repeated runs.
+- Another client.
+
 Do not run the complete suite after every edit.
-When existing `evals.json` or `triggers.json` definitions are migrated, migrate the whole affected set together; format migration alone needs static validation, not a mandatory model run.
 
-## Executable definitions
+## Prepare cases
 
-Keep behavior cases in `skills/<name>/evals/evals.json` and routing cases in `triggers.json`.
-Use the Agent Skills executable envelope with `skill_name` and `evals` and the case fields `id`, `prompt`, optional `files`, `expected_output`, and `assertions`; routing cases use `expected_handlers`.
-The case prompt and fixture contain only executor input.
-Assertions and expected output are hidden from the executor and used for grading.
-Use synthetic identities, repositories, harness artifacts, and sessions; never commit a real session, even after manual redaction.
-Keep raw prompts, outputs, traces, and disposable fixtures outside the public repository.
-Run `python3 scripts/check_repository.py` to validate the maintained pairs, Skill metadata, executable definitions, and any current compact report without a model call.
-For changes to the bundled acquisition scripts, run `python3 -m unittest discover -s skills/outer-harness-retrospective/scripts -p 'test_*.py'` and `go test ./...` from `skills/outer-harness-retrospective/scripts/retro-pilot`.\
-Verify a pinned source build without reading real sessions.
+### Definition files
 
-## Run and record
+Behavior cases check what the Skill does; routing cases check whether it is selected and loaded.
 
-Before any model call, write an evaluation plan naming the candidate revision and file hashes, affected responsibility, path, selected cases and conditions, client, model, sandbox, and maximum model calls.
-The repository does not bundle a model runner; a compatible runner must implement this plan, isolated execution, direct routing observations, and compact reporting contract.\
-The `mtk177a/skills` `scripts/run_skill_evaluation.py` runner with its adjacent `evaluation_contract.py` is one compatible implementation and accepts this repository through `--root`.\
-Use a temporary directory for its plan, run, and grading artifacts; do not add that checkout as a runtime dependency of the pilot helper.
-Review the call count and make no unplanned calls.
-Run cases in disposable fixtures with the intended Skill isolated from personal copies and unrelated plugins; if isolation cannot be established, record the run as unverified.
-For routing, grade observed Skill loading, not a final response's claim that a Skill was used.
-Grade only the selected case-condition pairs against their assertions, and distinguish `pass`, `fail`, `inconclusive`, and `error`.
-Keep the compact result tied to the evaluated revision and input hashes; record the stopping reason, unrun cases, and unverified boundaries.
-Only add cases or rerun when a specific remaining uncertainty would change the decision.
+| Case type | File |
+| --- | --- |
+| Behavior | `skills/<name>/evals/evals.json` |
+| Routing | `skills/<name>/evals/triggers.json` |
 
-The public evaluation record may include synthetic case IDs, counts, verdicts, hashes, and explanations that contain no private session material.
-Private pilot evidence and model outputs from a real retrospective stay outside the repository.
-No evaluation result grants authority to approve a proposal, edit an external harness, or post to an Issue.
+Use the Agent Skills executable format:
+
+| Purpose | Fields |
+| --- | --- |
+| Envelope (top level) | `skill_name`, `evals` |
+| Case identity | `id` |
+| Executor input | `prompt`, optional `files` |
+| Behavior grading | `expected_output`, `assertions` |
+| Routing grading | `expected_handlers` |
+
+Put only executor input in the case prompt and fixture.\
+Hide assertions and expected output from the executor and use them for grading.
+
+### Test data
+
+Use synthetic identities, repositories, harness artifacts, and sessions.\
+Never commit a real session, even after manual redaction.
+
+### Definition migration
+
+When migrating existing `evals.json` or `triggers.json` definitions, migrate the whole affected set together.\
+A format-only migration needs static validation; it does not require a model run.
+
+## Run static checks
+
+### Repository checks
+
+Run from the repository root:
+
+```sh
+python3 scripts/check_repository.py
+```
+
+This checks maintained translation pairs, Skill metadata, executable definitions, and any current compact report without calling a model.
+
+### Acquisition script checks
+
+When changing the bundled acquisition scripts, also perform these checks:
+
+- **Python tests**
+
+  Run from the repository root:
+
+  ```sh
+  python3 -m unittest discover -s skills/outer-harness-retrospective/scripts -p 'test_*.py'
+  ```
+
+- **Go tests**
+
+  Run from `skills/outer-harness-retrospective/scripts/retro-pilot`:
+
+  ```sh
+  go test ./...
+  ```
+
+- **Pinned build:** Verify that the pinned source builds without reading real sessions.
+
+## Run model evaluations
+
+### Evaluation plan
+
+Before any model call, write a plan that identifies:
+
+| Field | What to specify |
+| --- | --- |
+| Candidate revision | The version to evaluate. |
+| File hashes | The hashes of the candidate files. |
+| Responsibility | The responsibility affected by the change. |
+| Evaluation path | The selected evaluation path. |
+| Cases and conditions | The case-condition pairs to run. |
+| Client | The client used for the run. |
+| Model | The model used for the run. |
+| Sandbox | The execution sandbox. |
+| Call limit | The maximum number of model calls. |
+
+### Runner
+
+This repository does not bundle a model runner.\
+Use a compatible runner that supports:
+
+- the evaluation plan;
+- isolated execution;
+- direct observation of Skill loading for routing;
+- the compact reporting contract.
+
+The `mtk177a/skills` runner `scripts/run_skill_evaluation.py`, with its adjacent `evaluation_contract.py`, is one compatible implementation.\
+It accepts this repository through `--root`.
+
+Keep its plan, run, and grading artifacts in a temporary directory.\
+Do not add that checkout as a runtime dependency of the pilot helper.
+
+### Execution
+
+- **Call count:** Review the number of model calls and make no unplanned calls.
+- **Fixtures:** Run cases in disposable fixtures.
+- **Isolation:** Isolate the intended Skill from personal copies and unrelated plugins.
+- **Unverified isolation:** If isolation cannot be established, record the run as unverified.
+
+### Grading
+
+Grade only the selected case-condition pairs against their assertions.\
+Distinguish `pass`, `fail`, `inconclusive`, and `error`.
+
+For routing, grade the observed loading of the Skill.\
+Do not use the final response's claim that the Skill was used as proof of loading.
+
+### Additional evaluation
+
+Add cases or rerun only when a specific remaining uncertainty could change the decision.
+
+## Record results
+
+### Compact record
+
+Tie the result to the evaluated revision and input hashes.\
+Include:
+
+- **Stopping reason:** Why the run ended.
+- **Unrun cases:** Which cases were not run.
+- **Unverified boundaries:** What the run did not verify.
+
+### Information handling
+
+| Record | Where it belongs |
+| --- | --- |
+| Synthetic case IDs, counts, verdicts, hashes, and explanations with no private session material | May be included in the public evaluation record. |
+| Raw prompts, outputs, traces, and disposable fixtures | Outside the public repository. |
+| Private pilot evidence and model outputs from a real retrospective | Outside the public repository. |
+
+### Authority
+
+An evaluation result does not authorize any of the following:
+
+- approving a proposal;
+- editing an external harness;
+- posting to an Issue.
