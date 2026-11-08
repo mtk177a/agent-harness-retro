@@ -6,7 +6,7 @@ They do not create an independent policy, product requirement, interface, or age
 
 ## Translation pairs
 
-The maintained English and Japanese files are these eight pairs:
+The maintained English and Japanese files are:
 
 | English source of truth | Japanese reference translation |
 | --- | --- |
@@ -17,6 +17,8 @@ The maintained English and Japanese files are these eight pairs:
 | [`docs/glossary.md`](glossary.md) | [`docs/ja/glossary.md`](ja/glossary.md) |
 | [`docs/localization.md`](localization.md) | [`docs/ja/localization.md`](ja/localization.md) |
 | [`skills/outer-harness-retrospective/SKILL.md`](../skills/outer-harness-retrospective/SKILL.md) | [`skills/outer-harness-retrospective/SKILL-ja.md`](../skills/outer-harness-retrospective/SKILL-ja.md) |
+| [`skills/outer-harness-retrospective/references/lineage.md`](../skills/outer-harness-retrospective/references/lineage.md) | [`skills/outer-harness-retrospective/references/ja/lineage.md`](../skills/outer-harness-retrospective/references/ja/lineage.md) |
+| [`skills/outer-harness-retrospective/references/reporting.md`](../skills/outer-harness-retrospective/references/reporting.md) | [`skills/outer-harness-retrospective/references/ja/reporting.md`](../skills/outer-harness-retrospective/references/ja/reporting.md) |
 | [`.agents/skills/maintain-japanese-references/SKILL.md`](../.agents/skills/maintain-japanese-references/SKILL.md) | [`.agents/skills/maintain-japanese-references/SKILL-ja.md`](../.agents/skills/maintain-japanese-references/SKILL-ja.md) |
 
 Each Japanese file must link back to its English source and state that the English source takes precedence when the two differ.

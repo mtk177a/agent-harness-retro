@@ -187,7 +187,7 @@ Choose based on the finding; a failure does not always require another instructi
 ### Report
 
 Keep the finding, cause hypothesis, and proposed response distinct.\
-The [Skill's report contract](../skills/outer-harness-retrospective/SKILL.md#report-contract) defines which fields to include.
+The [Skill's report contract](../skills/outer-harness-retrospective/references/reporting.md) defines which fields to include.
 
 | Decision | Meaning |
 | --- | --- |

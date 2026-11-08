@@ -169,7 +169,7 @@ Scope はどの範囲で対応するか、[Control surface](#control-surface) �
 - **その場限りの対応:** 今回の状況に限った対応。
 - **恒久的な変更なし:** ハーネスに恒久的な変更を加えない対応。
 
-詳しい候補は [Skill の振り分け表](../../skills/outer-harness-retrospective/SKILL-ja.md#範囲と振り分け) に定めている。
+詳しい候補は [Skill の振り分け表](../../skills/outer-harness-retrospective/references/ja/reporting.md#対応の仕組み) に定めている。
 
 ### Proposal
 

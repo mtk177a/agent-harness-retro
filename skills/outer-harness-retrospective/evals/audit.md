@@ -68,7 +68,7 @@ The standalone Skill copy fetched and built the pinned source with `vcs.modified
 Go tests, Go vet, Python unit tests, the repository checker, and an invalid-binary rejection passed without reading a real session.\
 This checks executable packaging and version enforcement; it does not establish that a real cohort can be acquired or that a behavioral finding is supported by metadata alone.
 
-The current one-call synthetic routing result is in [`report.json`](report.json).\
+The one-call synthetic acquisition routing result for the Skill revision evaluated on 2026-09-29 is archived in [`history/2026-09-29-acquisition-routing-report.json`](history/2026-09-29-acquisition-routing-report.json).\
 The response named the Skill correctly, but the Codex trace recorded no Skill file load, so the case failed its direct routing criterion.\
 The trace recorded no command or tool execution.\
 The prompt asked for workflow identification without execution; automatic loading during an actual acquisition task remains unverified.\

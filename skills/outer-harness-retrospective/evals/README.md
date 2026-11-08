@@ -20,5 +20,5 @@ Run `python3 scripts/check_repository.py` from the repository root for the local
 The cases do not authorize access to a real session, writes to a target harness, or public posting.
 
 The audit and the earlier revision-bound routing result are in [`audit.md`](audit.md) and [`history/2026-09-29-routing-report.json`](history/2026-09-29-routing-report.json).\
-The current revision's focused acquisition routing result is in [`report.json`](report.json); naming the Skill without loading it did not pass the observed-loading requirement.
+The focused acquisition routing result for the Skill revision evaluated on 2026-09-29 is archived in [`history/2026-09-29-acquisition-routing-report.json`](history/2026-09-29-acquisition-routing-report.json); naming the Skill without loading it did not pass the observed-loading requirement.
 Model observations belong in a compact report tied to the candidate revision; a passing case cannot establish behavior across other prompts, models, or environments.

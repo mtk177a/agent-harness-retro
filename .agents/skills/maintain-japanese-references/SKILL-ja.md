@@ -1,5 +1,5 @@
-> これは [英語版 `SKILL.md`](SKILL.md) の参考訳です。\
-> 内容が異なる場合は英語版を優先してください。
+> これは [英語版 `SKILL.md`](SKILL.md) の参考訳である。
+> 内容が異なる場合は英語版を優先する。
 
 ---
 name: maintain-japanese-references
@@ -22,6 +22,8 @@ description: リポジトリで指定された英語の正式版ファイルが�
 - `docs/glossary.md` → `docs/ja/glossary.md`
 - `docs/localization.md` → `docs/ja/localization.md`
 - `skills/outer-harness-retrospective/SKILL.md` → `skills/outer-harness-retrospective/SKILL-ja.md`
+- `skills/outer-harness-retrospective/references/lineage.md` → `skills/outer-harness-retrospective/references/ja/lineage.md`
+- `skills/outer-harness-retrospective/references/reporting.md` → `skills/outer-harness-retrospective/references/ja/reporting.md`
 - `.agents/skills/maintain-japanese-references/SKILL.md` → `.agents/skills/maintain-japanese-references/SKILL-ja.md`
 
 この一覧と Issue、Pull Request、コミットの言語規則は、リポジトリのローカリゼーション方針を基準とする。\

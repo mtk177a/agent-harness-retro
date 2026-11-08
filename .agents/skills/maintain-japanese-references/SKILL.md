@@ -19,6 +19,8 @@ The designated translation pairs are:
 - `docs/glossary.md` → `docs/ja/glossary.md`
 - `docs/localization.md` → `docs/ja/localization.md`
 - `skills/outer-harness-retrospective/SKILL.md` → `skills/outer-harness-retrospective/SKILL-ja.md`
+- `skills/outer-harness-retrospective/references/lineage.md` → `skills/outer-harness-retrospective/references/ja/lineage.md`
+- `skills/outer-harness-retrospective/references/reporting.md` → `skills/outer-harness-retrospective/references/ja/reporting.md`
 - `.agents/skills/maintain-japanese-references/SKILL.md` → `.agents/skills/maintain-japanese-references/SKILL-ja.md`
 
 The repository's localization policy is the source of truth for this list and for the language rules of Issues, pull requests, and commits. Read it before making a translation decision.

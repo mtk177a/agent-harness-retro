@@ -195,7 +195,7 @@ JSON 形式で記録された本文のテキストが、有効な JSON になっ
 ### 報告
 
 所見、原因の仮説、対応案を分けて示す。\
-報告に必要な項目は [Skill の報告仕様](../../skills/outer-harness-retrospective/SKILL-ja.md#報告内容の要件) に定める。
+報告に必要な項目は [Skill の報告仕様](../../skills/outer-harness-retrospective/references/ja/reporting.md) に定める。
 
 | 判断 | 意味 |
 | --- | --- |

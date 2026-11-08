@@ -161,7 +161,7 @@ Compare candidates only after the finding and likely responsibility scope have b
 - **One-off action:** A response limited to the current situation.
 - **No persistent change:** A response that needs no lasting harness change.
 
-The [Skill's routing table](../skills/outer-harness-retrospective/SKILL.md#scope-and-routing) defines the detailed candidates.
+The [Skill's routing table](../skills/outer-harness-retrospective/references/reporting.md#response-mechanisms) defines the detailed candidates.
 
 ### Proposal
 
