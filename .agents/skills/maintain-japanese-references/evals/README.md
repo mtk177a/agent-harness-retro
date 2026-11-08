@@ -8,7 +8,8 @@ Do not use real sessions, private harness artifacts, credentials, or machine-spe
 ## Provenance
 
 This Skill is adapted from [`mtk177a/skills` `maintain-japanese-references`](https://github.com/mtk177a/skills/tree/b32b606de2650d140d000150bb67a66f70de521e/.agents/skills/maintain-japanese-references) at commit `b32b606de2650d140d000150bb67a66f70de521e`, under the MIT License.
-This repository-specific adaptation defines seven translation pairs and the synthetic evaluation and authority boundaries in this file.
+The maintained translation pairs are defined in the [language policy](../../../../docs/localization.md#maintained-files).\
+This file defines the synthetic evaluation cases and authority checks for the repository-specific Skill.
 
 ## Execution
 
@@ -79,7 +80,9 @@ Grade observable decisions rather than exact wording.
 Every updated reference must remain semantically aligned with its English source, and every unchanged reference must have a reason grounded in the source diff.
 The Skill must preserve authority boundaries, avoid unsupported additions, surface uncertainty, and avoid modifying out-of-scope artifacts.
 
-## Executed evaluation — 2026-09-20
+## Historical evaluation — 2026-09-20
+
+These results apply to the Skill revision evaluated on that date; they do not validate later revisions.
 
 Independent Codex executors received the Skill and synthetic case inputs without this grading file. File-based cases ran in isolated temporary directories, and the primary agent inspected the resulting files or compared them with untouched baselines.
 
