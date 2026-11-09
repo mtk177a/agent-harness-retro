@@ -5,127 +5,103 @@
 
 ## Context
 
-Retrospective improvement involves several kinds of data with different owners and lifecycles.
+Session records, retrospective state, and actual harness artifacts have different owners and lifecycles.\
+Combining them would create four problems:
 
-Coding-agent session records are owned by their providers and accessed through `agent-sessions`.
-
-Retrospective analysis may need durable private state such as:
-
-- source versions already reviewed;
-- findings;
-- evidence relationships;
-- proposal decisions;
-- verification state.
-
-Actual outer-harness artifacts have separate sources of truth, often in user configuration or repositories.
-
-Combining these layers would create several problems.
-
-- A session-access database would gain retrospective semantics that unrelated consumers do not need.
-- A finding database could become a shadow source of truth for actual harness configuration.
-- Automatic materialization could turn uncertain retrospective interpretation directly into persistent instructions or enforcement.
-- Continuous event-level persistence could also create a large, noisy queue of low-value candidate findings.
+- **Session access**: A session-access database would have to represent retrospective concepts that other consumers do not need.
+- **Configuration authority**: A finding database could become a second source of truth for actual harness configuration.
+- **Automatic changes**: Uncertain interpretations could become permanent instructions or enforcement without a separate decision.
+- **Review workload**: Continuous event-level persistence could create a large, noisy queue of low-value candidate findings.
 
 ## Decision
 
-`agent-harness-retro` will keep three layers separate.
+Keep session evidence, retrospective state, and actual outer-harness artifacts separate.
 
 ### Session evidence
 
-Session evidence is obtained through the public machine-readable contract of `agent-sessions`.\
-`agent-harness-retro` does not own or duplicate complete provider transcripts.
+- **Ownership**: Coding-agent providers own the session records.
+- **Access**: Obtain evidence through the public machine-readable contract of `agent-sessions`.
+- **Copies**: `agent-harness-retro` does not own or duplicate complete provider transcripts.
 
 ### Retrospective state
 
-`agent-harness-retro` owns private state required to support retrospective continuity.
+`agent-harness-retro` owns private state needed to carry information between reviews.
 
-This may include:
+- **Possible records**
 
-- reviewed source versions;
-- findings;
-- evidence references;
-- proposals;
-- accepted or rejected decisions;
-- verification state.
+  - Reviewed source versions.
+  - Findings.
+  - Evidence relationships.
+  - Evidence references.
+  - Proposals.
+  - Accepted or rejected decisions.
+  - Verification state.
 
-The state format is not fixed by this ADR.\
-It must remain private and separate from the public repository.
+- **Format**: This ADR does not fix the persistent state format.
 
-Persistent writes occur only as part of deliberate retrospective or decision operations.\
-The default architecture does not use continuous per-event candidate generation, background synchronization, or periodic analysis.
+- **Privacy**: Keep state private and separate from the public repository.
+
+- **Writes**: Write persistent state only as part of deliberate retrospective or decision operations.
+
+- **Default execution**
+
+  The default architecture does not use:
+
+  - Continuous per-event candidate generation.
+  - Background synchronization.
+  - Periodic analysis.
 
 ### Materialized outer harness
 
-Actual instructions, Skills, Hooks, settings, CI, and other harness artifacts remain owned by their existing source of truth.
+Instructions, Skills, Hooks, settings, CI, and other harness artifacts retain their existing sources of truth.
 
-A proposal does not modify them automatically.
-
-Materialization, if implemented, requires explicit approval and must respect the target's own authority, source-of-truth model, permissions, and validation process.
-
-The initial retrospective workflow may stop at proposal generation.
+- **Proposals**: A proposal does not modify those artifacts automatically.
+- **Approval**: If proposal application is implemented, require explicit approval before applying a proposal.
+- **Target requirements**: Any implemented proposal application must respect the target's authority, source-of-truth model, permissions, and validation process.
+- **Initial workflow**: The initial retrospective workflow may stop at proposal generation.
 
 ## Evidence retention
 
-Findings should reference source evidence rather than persist complete transcripts.
-
-Where practical, retained references should include a logical source reference and verified source version.
-
-A bounded derived summary may be stored for usability, but generated summaries do not replace source provenance.
-
-When a private finding becomes a permanent public harness improvement, prefer creating a synthetic regression case that expresses the general failure instead of embedding private session content.
+- **Source evidence**: Findings should reference source evidence rather than store complete transcripts.
+- **Provenance**: Where practical, retained references should include a logical source reference and verified source version.
+- **Summaries**: A bounded derived summary may be stored for usability, but it does not replace source provenance.
+- **Public improvements**: When a private finding leads to a permanent public harness improvement, prefer a synthetic regression case that expresses the general failure instead of embedding private session content.
 
 ## Consequences
 
 ### Positive
 
-- `agent-sessions` remains a reusable session-access substrate.
-- Retrospective state can evolve without changing provider access.
-- Actual harness artifacts retain one clear source of truth.
-- Analysis can remain useful even if automatic writes are never implemented.
-- Uncertain findings do not become permanent instructions automatically.
-- Private evidence can remain private while generalized regression tests become public.
-- Continuous low-value candidate accumulation is avoided by default.
+- **Reuse**: `agent-sessions` remains reusable for session access.
+- **Independent state**: Retrospective state can evolve without changing provider access.
+- **Configuration authority**: Actual harness artifacts retain one clear source of truth.
+- **Proposal-only use**: Analysis can remain useful even if automatic writes are never implemented.
+- **Uncertain findings**: Uncertain findings do not automatically become permanent instructions.
+- **Privacy**: Private evidence can stay private while generalized regression tests become public.
+- **Review workload**: Low-value candidates do not accumulate continuously by default.
 
 ### Negative
 
-- Retrospective state needs its own storage and lifecycle.
-- A proposal and the materialized target may diverge until explicitly applied.
-- Some evidence may become unavailable if the provider deletes the original session.
-- Materialization requires an additional approval and validation step.
+- **State maintenance**: Retrospective state needs its own storage and lifecycle.
+- **Divergence**: A proposal and the actual target may differ until the proposal is explicitly applied.
+- **Evidence availability**: Evidence may become unavailable if the provider deletes the original session.
+- **Application process**: Applying a proposal requires an additional approval and validation step.
 
-These costs preserve clearer ownership and safer change boundaries.
+These costs preserve clear ownership and safer change boundaries.
 
 ## Alternatives considered
 
-### Store retrospective state in `agent-sessions`
-
-Rejected.
-
-Processing and findings are consumer-specific semantics and would reduce the reuse value of the session-access layer.
-
-### Copy complete session transcripts into retrospective storage
-
-Rejected.
-
-It increases privacy, retention, storage, and synchronization responsibilities beyond what retrospective provenance requires.
-
-### Automatically modify the harness after every retrospective
-
-Rejected.
-
-Retrospective conclusions may be uncertain, incorrectly scoped, or better solved through a different control surface.
-
-### Continuously persist one candidate finding per event or tool failure
-
-Rejected as the default.
-
-High-frequency candidate generation creates noise and review debt and encourages frequency to substitute for judgment.
+| Alternative | Decision | Reason |
+| --- | --- | --- |
+| Store retrospective state in `agent-sessions`. | Rejected. | Consumer-specific processing and findings would reduce the reuse value of session access. |
+| Copy complete session transcripts into retrospective storage. | Rejected. | Privacy, retention, storage, and synchronization responsibilities would exceed what evidence provenance requires. |
+| Automatically modify the harness after every retrospective. | Rejected. | Conclusions may be uncertain, have the wrong scope, or be better addressed through another control surface. |
+| Continuously store one candidate finding per event or tool failure. | Rejected as the default. | High-frequency generation creates noise and review debt and encourages frequency to replace judgment. |
 
 ## Revisit conditions
 
 Revisit this decision if:
 
-- a real workflow demonstrates that proposal-only retrospective cannot remain usable;
-- evidence retention cannot remain adequate without bounded source snapshots;
-- the state model requires a more formal persistence contract;
-- a reliable, explicitly authorized materialization workflow has been proven useful.
+- **Workflow limits**: A real workflow shows that proposal-only retrospectives cannot remain usable.
+- **Evidence retention**: Adequate evidence cannot be retained without bounded source snapshots.
+- **State contract**: The state model needs a more formal persistence contract.
+- **Proposal application**: A reliable workflow with explicit approval has been proven useful.
