@@ -92,11 +92,10 @@ Skill の処理は報告までである。\
 
 候補を漏れなく特定するには、判断に影響する欠落のない完全な一覧が必要である。
 
-**完全性検査の既知の不足**
+**イベントの完全性検査**
 
-[イベントの検証処理](../../skills/outer-harness-retrospective/scripts/retro-pilot/internal/pilot/contract.go) は、切り詰めや省略のあるイベント本文を受け入れる場合がある。\
-JSON 形式で記録された本文のテキストが、有効な JSON になっているかも確認していない。\
-そのため、取得処理が成功しても、内容が完全であるとは限らない。
+[イベントの検証処理](../../skills/outer-harness-retrospective/scripts/retro-pilot/internal/pilot/contract.go) は、切り詰められたメッセージやツール本文、一部が省略されたツール本文、JSON 形式として不正な本文を拒否する。\
+そのイベントを含む系統は、採用対象から除外する。
 
 ### 行動を分析するための証拠
 

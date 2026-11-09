@@ -146,7 +146,7 @@ func summarizeEvent(raw json.RawMessage, expected uint64) (EventSummary, error) 
 	}
 	switch event.Kind {
 	case "message":
-		if event.Message == nil || (event.Message.Role != "user" && event.Message.Role != "assistant") || event.Message.Text == nil || event.Message.Truncated == nil {
+		if event.Message == nil || (event.Message.Role != "user" && event.Message.Role != "assistant") || event.Message.Text == nil || event.Message.Truncated == nil || *event.Message.Truncated {
 			return EventSummary{}, errors.New("invalid message")
 		}
 		summary.Role = event.Message.Role
@@ -186,6 +186,17 @@ func validRecordedContent(state string, raw json.RawMessage) bool {
 		Format    string  `json:"format"`
 		Text      *string `json:"text"`
 		Truncated *bool   `json:"truncated"`
+		Omitted   bool    `json:"omitted"`
 	}
-	return json.Unmarshal(raw, &content) == nil && (content.Format == "text" || content.Format == "json") && content.Text != nil && content.Truncated != nil
+	if json.Unmarshal(raw, &content) != nil || content.Text == nil || content.Truncated == nil || *content.Truncated || content.Omitted {
+		return false
+	}
+	switch content.Format {
+	case "text":
+		return true
+	case "json":
+		return json.Valid([]byte(*content.Text))
+	default:
+		return false
+	}
 }

@@ -87,11 +87,10 @@ These limits apply to the bundled pilot helper; they do not define a universal r
 
 To identify all eligible candidates, the helper needs a complete listing without material omissions.
 
-**Known completeness gap**
+**Event completeness checks**
 
-The [event validator](../skills/outer-harness-retrospective/scripts/retro-pilot/internal/pilot/contract.go) can accept truncated or omitted event bodies.\
-It also does not check whether JSON-formatted body text contains valid JSON.\
-Acquisition can therefore succeed even when content is incomplete.
+The [event validator](../skills/outer-harness-retrospective/scripts/retro-pilot/internal/pilot/contract.go) rejects truncated messages and tool bodies, omitted tool content, and invalid JSON-formatted body text.\
+A lineage containing one of these events is excluded.
 
 ### Behavioral evidence
 
