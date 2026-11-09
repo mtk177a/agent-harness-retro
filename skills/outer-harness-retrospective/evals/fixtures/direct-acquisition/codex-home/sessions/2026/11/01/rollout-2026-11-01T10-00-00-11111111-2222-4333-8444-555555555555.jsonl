@@ -1,0 +1,9 @@
+{"timestamp": "2026-11-01T10:00:00Z", "type": "session_meta", "payload": {"id": "11111111-2222-4333-8444-555555555555", "session_id": "11111111-2222-4333-8444-555555555555", "cli_version": "0.149.1", "cwd": "/fictional/nebula", "source": "cli", "history_mode": "legacy"}}
+{"timestamp": "2026-11-01T10:00:01Z", "type": "event_msg", "payload": {"type": "user_message", "message": "Update the widget and run the repository checks."}}
+{"timestamp": "2026-11-01T10:00:02Z", "type": "response_item", "payload": {"type": "function_call", "call_id": "synthetic-check-old", "name": "exec_command", "arguments": "{\"cmd\": \"npm test\"}"}}
+{"timestamp": "2026-11-01T10:00:03Z", "type": "response_item", "payload": {"type": "function_call_output", "call_id": "synthetic-check-old", "output": "{\"output\": \"npm error Missing script: test\", \"metadata\": {\"exit_code\": 1}}"}}
+{"timestamp": "2026-11-01T10:00:04Z", "type": "event_msg", "payload": {"type": "user_message", "message": "AGENTS.md is stale. docs/testing.md documents npm run verify-nebula; use that command."}}
+{"timestamp": "2026-11-01T10:00:05Z", "type": "event_msg", "payload": {"type": "agent_message", "message": "I will follow the testing guide."}}
+{"timestamp": "2026-11-01T10:00:06Z", "type": "response_item", "payload": {"type": "function_call", "call_id": "synthetic-check-current", "name": "exec_command", "arguments": "{\"cmd\": \"npm run verify-nebula\"}"}}
+{"timestamp": "2026-11-01T10:00:07Z", "type": "response_item", "payload": {"type": "function_call_output", "call_id": "synthetic-check-current", "output": "{\"output\": \"Synthetic widget checks passed.\", \"metadata\": {\"exit_code\": 0}}"}}
+{"timestamp": "2026-11-01T10:00:08Z", "type": "event_msg", "payload": {"type": "agent_message", "message": "The documented check completed."}}

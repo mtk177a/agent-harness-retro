@@ -1,0 +1,7 @@
+{
+  "name": "synthetic-nebula",
+  "private": true,
+  "scripts": {
+    "verify-nebula": "node --test"
+  }
+}
