@@ -8,6 +8,8 @@
 .local/
 tmp/
 dist/
+__pycache__/
+*.pyc
 
 # OS
 

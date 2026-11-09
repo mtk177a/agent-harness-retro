@@ -1,57 +1,71 @@
-# 日本語参考訳
+# 言語方針
 
-> これは [英語版 `localization.md`](../localization.md) の日本語参考訳です。\
-> 英語版が正式版であり、内容に差異がある場合は英語版を優先します。
+> これは [英語版 `localization.md`](../localization.md) の日本語参考訳である。
+> 英語版が正式版であり、内容が異なる場合は英語版を優先する。
 
-このリポジトリでは、英語の公開成果物を正式な情報源として扱います。\
-日本語ファイルは、日本語で読みたい人のための参考訳として維持します。\
-日本語版は、独立した方針、製品要件、インターフェース、エージェント向けの指示を定めません。
+## リポジトリの成果物
 
-## 翻訳の対応関係
+| 成果物 | 言語 | 役割 |
+| --- | --- | --- |
+| 正式な公開成果物 | 英語 | 正式な情報源。 |
+| 保守する参考訳 | 日本語 | 内容が異なる場合は英語版を優先する。 |
 
-保守する英語版と日本語参考訳は、次の 7 組です。
+日本語参考訳は、英語版とは別の方針、製品要件、インターフェース、エージェント向け指示を定めない。
+
+英語を既定とし、日本語参考訳と Issue・Pull Request のテンプレートを例外として扱う。
+
+## Issue と Pull Request
+
+保守者が作成する公開 Issue と Pull Request では、次の言語を使う。
+
+| 箇所 | 言語 |
+| --- | --- |
+| タイトル | 英語 |
+| `Summary` | 英語 |
+| その他の本文セクション | 日本語が既定。英語も使用できる。 |
+| コメント | 日本語が既定。英語も使用できる。 |
+
+`Summary` を設け、公開する変更を識別できる短い内容にする。
+
+外部のコントリビューターに日本語で書くことは求めない。
+
+## コミット
+
+- **件名**: 公開する変更を識別できる英語の件名にする。
+- **詳細**: 必要に応じて、日本語または英語で書く。
+
+## 日本語参考訳の保守
+
+### 保守対象
 
 | 正式な英語版 | 日本語参考訳 |
 | --- | --- |
 | [`README.md`](../../README.md) | [`README.ja.md`](../../README.ja.md) |
 | [`AGENTS.md`](../../AGENTS.md) | [`AGENTS-ja.md`](../../AGENTS-ja.md) |
 | [`docs/architecture.md`](../architecture.md) | [`docs/ja/architecture.md`](architecture.md) |
+| [`docs/evaluation.md`](../evaluation.md) | [`docs/ja/evaluation.md`](evaluation.md) |
 | [`docs/glossary.md`](../glossary.md) | [`docs/ja/glossary.md`](glossary.md) |
 | [`docs/localization.md`](../localization.md) | [`docs/ja/localization.md`](localization.md) |
 | [`skills/outer-harness-retrospective/SKILL.md`](../../skills/outer-harness-retrospective/SKILL.md) | [`skills/outer-harness-retrospective/SKILL-ja.md`](../../skills/outer-harness-retrospective/SKILL-ja.md) |
+| [`skills/outer-harness-retrospective/references/lineage.md`](../../skills/outer-harness-retrospective/references/lineage.md) | [`skills/outer-harness-retrospective/references/ja/lineage.md`](../../skills/outer-harness-retrospective/references/ja/lineage.md) |
+| [`skills/outer-harness-retrospective/references/reporting.md`](../../skills/outer-harness-retrospective/references/reporting.md) | [`skills/outer-harness-retrospective/references/ja/reporting.md`](../../skills/outer-harness-retrospective/references/ja/reporting.md) |
 | [`.agents/skills/maintain-japanese-references/SKILL.md`](../../.agents/skills/maintain-japanese-references/SKILL.md) | [`.agents/skills/maintain-japanese-references/SKILL-ja.md`](../../.agents/skills/maintain-japanese-references/SKILL-ja.md) |
 
-各日本語ファイルには、対応する英語版へのリンクと、内容に差異がある場合は英語版を優先する旨を記します。
+ADR は、この保守対象に含めない。\
+英語の ADR を正式版とし、対応する日本語版の作成は求めない。
 
-## 保守規則
+### 翻訳の要件
 
-- 英語版の意味、要件、動作、範囲、その他の利用者に関係する内容が変わった場合は、日本語参考訳を更新します。
-- 英語版にない要件、例外、例、判断、権限、解釈を追加しません。
-- コード、識別子、コマンド名、製品名、リンク、その他の公開インターフェースの文字列は、翻訳によって意味や検索性が変わる場合、元の表記を正確に保持します。
-- 英語版の変更が意味に影響しない場合、日本語ファイルは変更しません。\
-  その場合は、日本語版の更新が不要な理由を Pull Request に記録しなければなりません。
-- 英語版の意味や正しい対応関係が曖昧な場合は、その曖昧さを報告し、解決するまで参考訳を変更しません。\
-  推測で訳してはいけません。
-- 英語版の変更に参考訳の更新が必要な場合は、同じ変更内で英語版と日本語版を更新します。
+- **正式版の案内**: 英語版へのリンクを付け、内容が異なる場合は英語版を優先すると明記する。
+- **意味**: 英語版にない要件、例外、例、判断、権限、解釈を追加しない。
+- **公開インターフェースの文字列**: 翻訳によって意味や検索性が変わる場合は、コード、識別子、コマンド、製品名、リンク、その他の公開インターフェースの文字列を保持する。
 
-リポジトリ専用の `maintain-japanese-references` Skill は、参考訳の確認と保守の手順を定めます。\
-参考訳を更新または確認できますが、英語版の編集、Issue や Pull Request の執筆、ADR の翻訳、振り返り分析は行いません。
+### 更新時の判断
 
-## 保守者の作業で使う言語
+保守対象の英語版を追加・変更するときは、リポジトリ専用の [`maintain-japanese-references` Skill](../../.agents/skills/maintain-japanese-references/SKILL-ja.md) を使って、日本語参考訳を作成または確認する。
 
-正式な公開成果物は、引き続き英語で作成します。\
-保守する日本語参考訳と Issue・Pull Request のテンプレートは、この方針で明示する作業上の例外です。\
-これらの例外は、正式版の言語を変えません。
-
-保守者が作成する Issue と Pull Request には、英語のタイトルと、公開する変更を識別できる短い英語の `Summary` を付けなければなりません。
-
-Issue と Pull Request のそれ以外の本文セクションとコメントは、日本語を既定とします。\
-英語も使用でき、外部のコントリビューターに日本語で書くことは求めません。
-
-コミットメッセージは、公開する変更を識別できる英語の件名を使うという保守者向け規則に従います。\
-詳細は、必要に応じて日本語または英語で書けます。
-
-## ADR
-
-アーキテクチャ決定記録は、保守する日本語参考訳の対象ではありません。\
-英語の ADR が正式版であり、この方針は対応する `ADR-ja.md` を要求しません。
+| 英語版の変更 | 必要な対応 |
+| --- | --- |
+| 意味、要件、動作、範囲、その他の利用者に関係する内容が変わる | 同じ変更内で日本語参考訳を更新する。 |
+| 意味が変わらない | 日本語参考訳は変更せず、その理由を Pull Request に記録する。 |
+| 英語版の意味や、訳文との対応が曖昧である | 曖昧な点を報告し、解決するまで参考訳を変更しない。推測で訳さない。 |

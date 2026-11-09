@@ -1,49 +1,68 @@
-# Japanese Reference Translations
+# Language Policy
 
-This repository treats English public artifacts as the authoritative source.\
-Japanese files are maintained as reference translations for readers who prefer Japanese.\
-They do not create an independent policy, product requirement, interface, or agent instruction.
+## Repository artifacts
 
-## Translation pairs
+| Artifact | Language | Role |
+| --- | --- | --- |
+| Canonical public repository artifacts | English | Source of truth. |
+| Maintained reference translations | Japanese | The English source takes precedence if the content differs. |
 
-The maintained English and Japanese files are these seven pairs:
+Japanese references do not define independent policies, product requirements, interfaces, or agent instructions.
+
+Japanese reference files and Issue and pull request templates are exceptions to the default English language.
+
+## Issues and pull requests
+
+For maintainer-created public Issues and pull requests, use these languages:
+
+| Part | Language |
+| --- | --- |
+| Title | English |
+| `Summary` | English |
+| Other body sections | Japanese by default; English is also allowed. |
+| Comments | Japanese by default; English is also allowed. |
+
+Include a short `Summary` that identifies the public change.
+
+External contributors are not required to write Japanese.
+
+## Commits
+
+- **Subject**: Use English to identify the public change.
+- **Details**: Use Japanese or English as appropriate.
+
+## Maintaining Japanese references
+
+### Maintained files
 
 | English source of truth | Japanese reference translation |
 | --- | --- |
 | [`README.md`](../README.md) | [`README.ja.md`](../README.ja.md) |
 | [`AGENTS.md`](../AGENTS.md) | [`AGENTS-ja.md`](../AGENTS-ja.md) |
 | [`docs/architecture.md`](architecture.md) | [`docs/ja/architecture.md`](ja/architecture.md) |
+| [`docs/evaluation.md`](evaluation.md) | [`docs/ja/evaluation.md`](ja/evaluation.md) |
 | [`docs/glossary.md`](glossary.md) | [`docs/ja/glossary.md`](ja/glossary.md) |
 | [`docs/localization.md`](localization.md) | [`docs/ja/localization.md`](ja/localization.md) |
 | [`skills/outer-harness-retrospective/SKILL.md`](../skills/outer-harness-retrospective/SKILL.md) | [`skills/outer-harness-retrospective/SKILL-ja.md`](../skills/outer-harness-retrospective/SKILL-ja.md) |
+| [`skills/outer-harness-retrospective/references/lineage.md`](../skills/outer-harness-retrospective/references/lineage.md) | [`skills/outer-harness-retrospective/references/ja/lineage.md`](../skills/outer-harness-retrospective/references/ja/lineage.md) |
+| [`skills/outer-harness-retrospective/references/reporting.md`](../skills/outer-harness-retrospective/references/reporting.md) | [`skills/outer-harness-retrospective/references/ja/reporting.md`](../skills/outer-harness-retrospective/references/ja/reporting.md) |
 | [`.agents/skills/maintain-japanese-references/SKILL.md`](../.agents/skills/maintain-japanese-references/SKILL.md) | [`.agents/skills/maintain-japanese-references/SKILL-ja.md`](../.agents/skills/maintain-japanese-references/SKILL-ja.md) |
 
-Each Japanese file must link back to its English source and state that the English source takes precedence when the two differ.
+ADRs are outside this maintained set.\
+The English ADR is authoritative; a Japanese counterpart is not required.
 
-## Maintenance rules
+### Translation requirements
 
-- Update the Japanese reference when an English source changes its meaning, requirements, behavior, scope, or other user-relevant content.
-- Do not add requirements, exceptions, examples, decisions, permissions, or interpretations that are absent from the English source.
-- Preserve code, identifiers, command names, product names, links, and other public interface text exactly when translation would change their meaning or searchability.
-- If an English change is purely non-semantic, leave the Japanese file unchanged; the pull request must record why no translation update is needed.
-- If the English meaning or the correct correspondence is ambiguous, report the ambiguity and leave the translation unchanged until it is resolved. Do not guess.
-- Keep the English source and Japanese reference in the same change whenever the English change requires a translation update.
+- **Source notice**: Link to the English source and state that it takes precedence if the content differs.
+- **Meaning**: Do not add requirements, exceptions, examples, decisions, permissions, or interpretations that are absent from the English source.
+- **Public interface text**: Preserve code, identifiers, commands, product names, links, and other public interface strings when translation would change their meaning or searchability.
 
-The repository-local `maintain-japanese-references` Skill describes the review and maintenance workflow. It may update or assess reference translations, but it does not edit English sources, write Issues or pull requests, translate ADRs, or perform retrospective analysis.
+### When to update
 
-## Language for maintainer work
+When adding or changing a maintained English file, use the repository-local [`maintain-japanese-references` Skill](../.agents/skills/maintain-japanese-references/SKILL.md) to create or review its Japanese reference.
 
-Canonical public repository artifacts remain in English.\
-The maintained Japanese reference files and the Issue and pull request templates are explicit workflow exceptions described by this policy; they do not change the language of the canonical source files.
-
-Maintainer-created Issue and pull request titles must be in English, and each must include a short English `Summary` sufficient to identify the public change.
-
-The remaining Issue and pull request description sections and comments are written in Japanese by default; English is also acceptable.\
-External contributors are not required to write Japanese.
-
-Commit messages follow the same maintainer convention: use an English subject that identifies the public change, with Japanese or English detail as appropriate.
-
-## ADRs
-
-Architecture decision records are not part of the maintained Japanese translation set.\
-The English ADR remains the source of truth, and this policy does not require an `ADR-ja.md` counterpart.
+| English source change | Required action |
+| --- | --- |
+| Meaning, requirements, behavior, scope, or other user-relevant content changes | Update the Japanese reference in the same change. |
+| Meaning does not change | Leave the Japanese reference unchanged and record the reason in the pull request. |
+| The source meaning or its correspondence with the translation is unclear | Report the ambiguity and leave the reference unchanged until it is resolved; do not guess. |

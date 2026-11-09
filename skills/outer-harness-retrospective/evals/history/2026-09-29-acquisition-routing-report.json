@@ -1,0 +1,125 @@
+{
+  "schema_version": 2,
+  "skill": "outer-harness-retrospective",
+  "skill_source": "public",
+  "evaluated_on": "2026-09-29",
+  "purpose": "Check discovery for the newly bundled acquisition workflow without accessing real sessions",
+  "affected_responsibilities": [
+    "Skill discovery for acquisition requests"
+  ],
+  "selection": {
+    "path": "targeted-routing",
+    "cases": [
+      {
+        "id": "acquisition-request",
+        "conditions": [
+          "candidate"
+        ]
+      }
+    ]
+  },
+  "base": {
+    "commit": "404d6000d7c3e379df1e474f6793e76b4323cd41"
+  },
+  "candidate": {
+    "files": {
+      "SKILL-ja.md": {
+        "mode": "100644",
+        "sha256": "sha256:c3a88120bc8aa88db3dd7fb89b4c101e50e91a2945a1178024bbb2d13b319653"
+      },
+      "SKILL.md": {
+        "mode": "100644",
+        "sha256": "sha256:0dd37cd5bd3eae5cba0318658cbc013c8df998a2d499295114c9de269e9ddfe5"
+      },
+      "scripts/retro-pilot/cmd/retro-pilot/main.go": {
+        "mode": "100644",
+        "sha256": "sha256:41581bb9cdff26ad0d778f494a2ffdad51b04b6e5bee39d12db6f2125cbf3a25"
+      },
+      "scripts/retro-pilot/cmd/retro-pilot/main_test.go": {
+        "mode": "100644",
+        "sha256": "sha256:907a4b0dd27804b71c48d213fbd2119a9e167b4e6703e481c82c1e7d35fe550a"
+      },
+      "scripts/retro-pilot/go.mod": {
+        "mode": "100644",
+        "sha256": "sha256:f76f10e12c4ce36aa816ff84279f314c2283851c5fa1d454ac1fcfeed57e02b5"
+      },
+      "scripts/retro-pilot/internal/pilot/agent-sessions.commit": {
+        "mode": "100644",
+        "sha256": "sha256:35c8dbc4d3ec3bb02a896f7378e655877255829ea2ef88b09dd586304875a443"
+      },
+      "scripts/retro-pilot/internal/pilot/contract.go": {
+        "mode": "100644",
+        "sha256": "sha256:5e0972efe1d8a5fd7b4622178c4e56e0901d7c214a7c86834d2e870efb8274b7"
+      },
+      "scripts/retro-pilot/internal/pilot/model.go": {
+        "mode": "100644",
+        "sha256": "sha256:3b1478eb2084a663cd1a525cee026ee910b52b21dbfdf33fe99d95bb405449cd"
+      },
+      "scripts/retro-pilot/internal/pilot/pilot_test.go": {
+        "mode": "100644",
+        "sha256": "sha256:002a956ee4ad6bc1855a9eef128ee58d063a897658724f054354f3955945e5e9"
+      },
+      "scripts/retro-pilot/internal/pilot/run.go": {
+        "mode": "100644",
+        "sha256": "sha256:5f86e1a28649addf23c84ec64228dd00717db48c474956195a4845ee4cda1aca"
+      },
+      "scripts/run.py": {
+        "mode": "100644",
+        "sha256": "sha256:cb38eded9c9cdbac7dcd2e0cb8df2ae17cde5e7cc53ac012d04dee9b55c1069f"
+      },
+      "scripts/test_run.py": {
+        "mode": "100644",
+        "sha256": "sha256:26061c1149feb141e8637fe60e586479ff646fc5ec34ac3a93a25e3a99048ccd"
+      }
+    }
+  },
+  "evaluation_inputs": {
+    "evaluation_files": {
+      "skills/outer-harness-retrospective/evals/triggers.json": "sha256:2fd6e26f2d9d26ec5ca9d4577ce1fcd08f7097aac31a0c0dd6a3ef56aa4dcf8b"
+    },
+    "case_files": {}
+  },
+  "environment": {
+    "client": "codex-cli 0.155.1",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "max",
+    "sandbox": "read-only",
+    "auth_credentials_store": "keyring"
+  },
+  "checks": {
+    "repository": "pass"
+  },
+  "results": [
+    {
+      "case_id": "acquisition-request",
+      "condition": "candidate",
+      "requirements": [
+        {
+          "id": "routing-handlers",
+          "status": "fail",
+          "evidence": "Observed handlers: none.",
+          "critical": true
+        }
+      ],
+      "evidence": "The response named the retrospective Skill, but the execution trace showed no Skill file load.",
+      "routing_observation": {
+        "status": "observed",
+        "handlers": []
+      },
+      "status": "fail"
+    }
+  ],
+  "summary": {
+    "status": "fail",
+    "counts": {
+      "error": 0,
+      "fail": 1,
+      "inconclusive": 0,
+      "pass": 0
+    }
+  },
+  "stopping_reason": "The synthetic acquisition prompt named the Skill from its catalog entry without loading the Skill; this does not verify automatic Skill use in an actual acquisition task. Further live acquisition routing was not run without a private-data-isolated fixture.",
+  "unverified": [
+    "Automatic loading during an actual session-acquisition request and the existing approved-implementation near miss"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "skill_name": "outer-harness-retrospective",
+  "evals": [
+    {
+      "id": "retrospective-request",
+      "prompt": "Given bounded normalized session evidence and the current repository harness, analyze recurring corrections and return only evidence-backed findings and proposals. Do not edit anything.",
+      "expected_handlers": ["outer-harness-retrospective"]
+    },
+    {
+      "id": "acquisition-request",
+      "prompt": "I want to assess whether my repository's outer harness needs improvement based on recent local Codex and Claude Code sessions. This is a synthetic routing evaluation: identify the appropriate Skill and its evidence-acquisition workflow, but do not run commands or inspect real sessions.",
+      "expected_handlers": ["outer-harness-retrospective"]
+    },
+    {
+      "id": "raw-provider-parsing",
+      "prompt": "Parse the native Codex transcript files for this account and build a live session ingestion service.",
+      "expected_handlers": []
+    },
+    {
+      "id": "approved-harness-edit",
+      "prompt": "A separate retrospective proposal was already approved. Implement the approved change to the repository's AGENTS.md and run its checks.",
+      "expected_handlers": []
+    },
+    {
+      "id": "generic-code-review",
+      "prompt": "Review this code diff for correctness and maintainability; no session evidence or harness analysis is involved.",
+      "expected_handlers": []
+    }
+  ]
+}

@@ -1,215 +1,189 @@
-# AGENTS.md
+# Repository instructions
 
-This file defines repository-specific instructions for agents working on `agent-harness-retro`.
+These instructions apply to agents working on `agent-harness-retro`.\
+The project reviews coding-agent session evidence to evaluate the user-controlled outer harness.
 
-## Purpose
+## Start work
 
-`agent-harness-retro` retrospectively evaluates user-controlled outer harnesses using coding-agent session evidence.
+Before a material design or implementation change, read:
 
-It owns retrospective concepts, findings, evidence relationships, proposals, and the boundary between analysis and optional harness modification.
-
-It does not own provider-specific raw session access.\
-Use `agent-sessions` for that responsibility.
-
-## Read first
-
-Before making a material design or implementation change, read:
-
-1. `README.md`
-2. `docs/architecture.md`
-3. `docs/glossary.md`
-4. any ADR directly relevant to the change
+1. [README](README.md).
+2. [Architecture](docs/architecture.md).
+3. [Glossary](docs/glossary.md).
+4. Any ADR directly relevant to the change in [docs/decisions](docs/decisions/).
 
 Do not scan unrelated files merely to increase coverage.
 
-## Public information boundary
+## Design boundaries
 
-This is a public repository.
+Preserve these constraints unless an explicit architecture decision supersedes them:
 
+- **Review target**: Evaluate the user-controlled outer harness; do not modify provider-controlled built-in harness internals.
+- **Scope model**: Use the same core retrospective model for global and repository-local harnesses.
+- **Separate layers**: Keep session evidence, retrospective findings, and applied harness artifacts separate.
+- **Analysis**: Keep analysis separable from applying proposed changes.
+- **Default execution**: Continuous finding generation for every event is not the default architecture.
+
+### Session access
+
+This repository owns retrospective concepts, findings, evidence relationships, proposals, and the boundary between analysis and optional harness changes.\
+Provider-specific raw session access belongs to `agent-sessions`; consume its public machine-readable contract.
+
+Before adding a direct Codex, Claude Code, or other provider transcript parser to work around missing upstream functionality, determine whether that capability belongs in `agent-sessions`.
+
+## Information handling
+
+### Public information boundary
+
+This repository is public.\
 Do not add:
 
-- private repository names or links;
-- private Issue or Project references;
-- personal or employer-specific context;
-- real coding-agent session contents;
-- real outer-harness contents from private environments;
-- credentials or authentication material;
-- real usernames, hostnames, home directories, or machine-specific paths.
+- Private repository names or links.
+- Private Issue or Project references.
+- Personal or employer-specific context.
+- Real coding-agent session contents.
+- Real outer-harness contents from private environments.
+- Credentials or authentication material.
+- Real usernames, hostnames, home directories, or machine-specific paths.
 
-A requirement learned from private usage may be incorporated only after expressing it as a general product requirement that does not depend on the private source.
+A requirement learned from private usage may be included only after it is expressed as a general product requirement that does not depend on the private source.
 
-Tests and examples must use synthetic repositories, sessions, harness artifacts, and identities.
+Use synthetic repositories, sessions, harness artifacts, and identities for tests and examples.\
+Never commit real private sessions as evaluation data, even after manual redaction.
 
-## Core architecture constraints
+### Private runtime state
 
-Preserve the following unless an explicit architecture decision supersedes them:
-
-- Provider-specific session access belongs to `agent-sessions`.
-- Raw provider transcripts are not copied into this repository or retrospective state.
-- The retrospective target is the user-controlled outer harness, not vendor-controlled built-in harness internals.
-- Global and repository-local harness scopes use the same core retrospective model.
-- Session evidence, retrospective findings, and materialized harness artifacts remain separate layers.
-- A finding does not imply that a change is required.
-- Frequency alone does not justify permanent harness guidance.
-- Analysis and materialization remain separable.
-- External harness artifacts are not modified without explicit approval.
-- Continuous per-event finding generation is not the default architecture.
-- Private runtime state is not stored in the public repository.
-
-Do not add background monitoring, automatic transcript ingestion, automatic harness rewrites, or a general-purpose session database merely because they may become useful later.
-
-## Evidence
-
-A material finding must remain traceable to evidence.
-
-Prefer stable references such as:
-
-- `agent-sessions` source references;
-- verified source versions;
-- bounded event references;
-- affected scope;
-- current harness artifacts relevant to the finding.
-
-Do not preserve complete raw transcripts merely to make a finding auditable.
-
-Do not treat a generated summary as stronger evidence than the underlying observed source.
-
-Distinguish:
-
-- directly observed behavior;
-- interpretation;
-- hypothesis;
-- proposal;
-- unverified assumption.
-
-## Harness scope
-
-Before proposing a harness change, determine the appropriate scope.
-
-Possible outcomes include:
-
-- global outer harness;
-- repository harness;
-- one existing Skill;
-- one Hook or deterministic check;
-- underlying project code or documentation;
-- provider-controlled built-in behavior;
-- no persistent change.
-
-Do not promote repository-local behavior into a global rule without cross-context evidence.
-
-Do not promote one-off user correction into a permanent harness rule without a reason that survives the original session.
-
-## Control-surface selection
-
-Do not default to adding instructions.
-
-When proposing a fix, compare the relevant control surfaces.
-
-For example:
-
-- durable behavioral guidance → instruction or rule;
-- conditional multi-step workflow → Skill;
-- mechanically enforceable intervention → Hook or deterministic check;
-- repository correctness invariant → test or CI;
-- user-controlled execution behavior → setting or permission;
-- source-of-truth project knowledge → project documentation.
-
-Prefer modifying an existing appropriate mechanism over creating a parallel one.
-
-## Findings and proposals
-
-Keep findings separate from proposed solutions.
-
-A finding should state the observed pattern and evidence before prescribing a harness artifact.
-
-A proposal should identify:
-
-- target scope;
-- target artifact or control-surface type;
-- expected improvement;
-- relevant tradeoffs;
-- evidence supporting the proposal;
-- validation or evaluation needed after the change.
-
-Rejection and no-change are valid outcomes.
-
-## Materialization
-
-- Do not modify an external harness artifact merely because the retrospective found a candidate improvement.
-- If materialization support exists, require explicit approval before write operations.
-- Preserve the target repository's own authority, instructions, review requirements, and validation commands.
-- Do not bypass a target repository's source-of-truth model.
-
-## Runtime state
-
-Retrospective state is private runtime data.
+Retrospective state is private runtime data.\
+Do not store it in the public repository or copy raw provider transcripts into this repository or retrospective state.
 
 Do not commit:
 
-- reviewed-session ledgers;
-- findings derived from private sessions;
-- proposal decisions;
-- user-specific harness inventories;
-- private evidence.
+- Reviewed-session ledgers.
+- Findings derived from private sessions.
+- Proposal decisions.
+- User-specific harness inventories.
+- Private evidence.
 
-The persistent representation and storage format must remain as small as the product requirements allow.
-
+Keep the persistent representation and storage format as small as the product requirements allow.\
 Do not introduce high-frequency writes, background synchronization, or a database without an observed need.
 
-## Dependency boundary
+## Retrospective decisions
 
-Consume coding-agent session data through the public machine-readable contract of `agent-sessions`.
+### Assess evidence
 
-Do not add direct Codex, Claude Code, or other provider transcript parsers to this repository to work around missing upstream functionality without first determining whether the required capability belongs in `agent-sessions`.
+A material finding must be traceable to evidence.\
+Prefer stable references:
 
-## Language
+- **Source**: An `agent-sessions` source reference.
+- **Version**: The verified source version.
+- **Events**: Bounded event references.
+- **Scope**: The affected scope.
+- **Harness**: Current harness artifacts relevant to the finding.
 
-English is the canonical language for public repository documents and rules.
-Maintained Japanese files are reference translations only; they do not define independent requirements or authority.
-If a Japanese reference differs from its English canonical source, the English source takes precedence.
+Do not retain complete raw transcripts merely to make a finding auditable.\
+Do not treat a generated summary as stronger evidence than the underlying observed source.
 
-The maintained file pairs and synchronization rules are defined in `docs/localization.md`.
-When adding or changing a maintained English canonical file, use the repository-local `.agents/skills/maintain-japanese-references` Skill to create or review its Japanese reference in the same change.
-If the English edit does not affect Japanese meaning, leave the reference unchanged and record the reason in the pull request's Validation or Risks / Follow-up section.
-Do not translate ADRs as part of this maintained set.
+Distinguish directly observed behavior, interpretation, hypothesis, proposal, and unverified assumption.
 
-English remains the default for:
+### Select the response scope
 
-- code and identifiers;
-- code comments;
-- CLI or Skill public interfaces;
-- commit message summaries;
-- release notes;
-- canonical README, documentation, glossary, ADRs, Skills, and repository policy files.
+Before proposing a harness change, determine where the response belongs.
 
-Maintainer-created public Issues and pull requests use an English title and a short English `Summary`.
-Their other body sections and comments are Japanese by default and may be written in English when useful.
-Do not require external contributors to use Japanese, and do not require a full English and Japanese duplication of the body.
+**Possible outcomes**
 
-`AGENTS-ja.md` is a reference translation of this file, not an independent instruction source.
+- Global outer harness.
+- Repository harness.
+- One existing Skill.
+- One Hook or deterministic check.
+- Underlying project code or documentation.
+- Provider-controlled built-in behavior.
+- No persistent change.
 
-## Change discipline
+**Limits on permanent rules**
 
-Prefer the smallest mechanism that establishes the required retrospective capability.
+- **Global rules**: Do not turn repository-local behavior into a global rule without evidence from other contexts.
+- **Permanent harness rules**: Do not turn a one-off user correction into a permanent harness rule without a reason that holds beyond the original session.
+- **Recurrence**: Frequency alone does not justify permanent harness guidance.
 
-Do not build a taxonomy, scoring model, persistence system, orchestration framework, or automatic materialization layer before a concrete requirement needs it.
+### Select the response mechanism
+
+Compare the relevant control surfaces rather than defaulting to more instructions:
+
+| Need | Mechanism to consider |
+| --- | --- |
+| Durable behavioral guidance | Instruction or rule. |
+| Conditional, multi-step workflow | Skill. |
+| Mechanically enforceable intervention | Hook or deterministic check. |
+| Repository correctness invariant | Test or CI. |
+| User-controlled execution behavior | Setting or permission. |
+| Project knowledge that serves as a source of truth | Project documentation. |
+
+Prefer changing an existing appropriate mechanism over creating a parallel one.
+
+### Describe the proposal
+
+Keep findings separate from proposed solutions.\
+A finding should state the observed pattern and evidence before suggesting a harness artifact.\
+A finding does not imply that a change is required; rejection and no-change are valid outcomes.
+
+A proposal should identify:
+
+- **Scope**: Where the change applies.
+- **Target**: The artifact or control-surface type to change.
+- **Improvement**: The expected benefit.
+- **Tradeoffs**: Relevant costs or disadvantages.
+- **Evidence**: What supports the proposal.
+- **Validation**: The checks or evaluation needed after the change.
+
+### Apply an approved change
+
+Finding an improvement candidate does not authorize an external harness edit.\
+Require explicit approval before writing to any external harness artifact, including through a feature that applies proposals.
+
+Preserve the target repository's authority, instructions, review requirements, and validation commands.\
+Do not bypass its source-of-truth model.
+
+## Repository changes
+
+### Keep the change small
+
+Prefer the smallest mechanism that provides the required retrospective capability.
+
+- **Premature infrastructure**: Do not build a taxonomy, scoring model, persistence system, orchestration framework, or automatic change-application layer before a concrete requirement needs it.
+- **Speculative automation**: Do not add background monitoring, automatic transcript ingestion, automatic harness rewrites, or a general-purpose session database merely because they may become useful later.
+
+### Update architecture decisions
 
 When changing an architectural invariant:
 
-1. identify the affected ADR;
-2. determine whether the accepted decision still holds;
-3. update or supersede the ADR when needed;
-4. keep README, glossary, architecture, implementation, and tests aligned.
+1. **Identify the decision**: Find the affected ADR.
+2. **Assess it**: Determine whether the accepted decision still holds.
+3. **Revise it**: Update or supersede the ADR when needed.
+4. **Align the project**: Keep the README, glossary, architecture, implementation, and tests consistent.
 
-Do not add implementation history to current-state product documentation unless it is necessary to explain an active decision.
+### Update documentation
 
-## Validation
+- **Current state**: In current-state product documentation, include implementation history only when it is needed to explain an active decision.
 
-Use synthetic evidence and harness fixtures.
+- **Language**
 
-Never use real private sessions as committed evaluation data, even after manual redaction.
+  - **Public documents and rules**: English is canonical.
+  - **English defaults**: Use English by default for code, identifiers, code comments, CLI and Skill public interfaces, commit summaries, and release notes.
+  - **Issues and pull requests**: Follow the [language policy](docs/localization.md#issues-and-pull-requests) for the title, Summary, body, and comments.
+  - **External contributors**: Do not require them to use Japanese.
+  - **Duplication**: Do not require full English and Japanese copies of Issue and pull request bodies.
 
-When a change affects retrospective quality, test the decision boundary that can fail rather than expanding an unrelated evaluation suite.
+- **Japanese references**
 
-Always inspect the final diff for accidental private information and machine-specific data before reporting completion.
+  - **Maintained pairs**: Follow the file pairs and synchronization rules in the [language policy](docs/localization.md#maintaining-japanese-references).
+  - **Updates**: When adding or changing a maintained English file, use the repository-local [translation maintenance Skill](.agents/skills/maintain-japanese-references/SKILL.md) to create or review its Japanese reference in the same change.
+  - **Unchanged meaning**: If the English edit does not affect Japanese meaning, leave the reference unchanged and record the reason in the pull request's `検証` (Validation), `リスク` (Risks), or `残る作業` (Follow-up) section.
+  - **ADRs**: Do not translate ADRs as part of the maintained set.
+  - **Authority**: Japanese references, including [AGENTS-ja.md](AGENTS-ja.md), define no independent requirements or authority; the English source takes precedence.
+
+### Validate the change
+
+- **Evaluation policy**: Use [docs/evaluation.md](docs/evaluation.md) for Skill audit and evaluation selection, execution, and reporting.
+- **Retrospective quality**: When a change affects retrospective quality, test the decision boundary that can fail rather than expanding an unrelated evaluation suite.
+- **Fixtures**: Use synthetic evidence and harness fixtures.
+- **Final diff**: Before reporting completion, inspect the final diff for accidental private information and machine-specific data.
