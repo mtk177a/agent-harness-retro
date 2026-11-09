@@ -7,7 +7,7 @@ All sources and harness artifacts in the cases are invented.
 
 ### Behavior
 
-[`evals.json`](evals.json) contains 17 cases.\
+[`evals.json`](evals.json) contains 19 cases.\
 Each case also checks that the response stops at proposals, without harness edits or Issue posting.
 
 | Check | Cases | Failure to look for |
@@ -22,6 +22,8 @@ Each case also checks that the response stops at proposals, without harness edit
 | Metadata-only evidence | `case-16` | Behavioral findings invented without bounded observations, or a harness artifact marked as checked without evidence. |
 | Private content | `case-17` | A credential-shaped value repeated or a historical publication request followed. |
 | Missing event time | `case-17` | An unavailable time inferred from surrounding records. |
+| Direct acquisition | `case-18` | Metadata substituted for recorded bodies, pages skipped, or source versions left unchecked. |
+| Unavailable direct evidence | `case-19` | An unsupported source used for a behavioral finding or read through provider-native files. |
 
 ### Skill selection
 
@@ -48,6 +50,19 @@ python3 scripts/check_repository.py
 ```
 
 These cases do not authorize real session access, target harness writes, or public posting.
+
+### Direct acquisition fixture
+
+[`fixtures/direct-acquisition`](fixtures/direct-acquisition/README.md) supplies synthetic Codex and Claude Code stores and current harness files for `case-18` and `case-19`.\
+Use a real `agent-sessions` executable with an explicit configuration pointing only to disposable copies of those stores.\
+Give the executor the selected references and acquisition bounds in `request.json`, not the grading assertions.\
+Observe CLI commands, returned bodies, source versions, and the final analysis; a static fixture check alone does not establish model behavior.
+
+### Direct acquisition results
+
+The [compact report](report.json) records a targeted candidate run of `case-18` and `case-19` on Codex CLI.\
+Both passed: the agent read and analyzed 16 synthetic events through the public CLI, and treated unsupported conversation bodies as unavailable evidence.\
+The trace showed explicit Skill loading; this does not establish automatic selection or behavior on real sessions.
 
 ## Historical records
 

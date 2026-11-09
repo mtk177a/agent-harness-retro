@@ -47,7 +47,8 @@ Skill は変更を適用せず、採用するかどうかは依頼者が決め�
 | 提供するもの | 状況 | 内容 |
 | --- | --- | --- |
 | 振り返りの Skill | 実装済み | [`outer-harness-retrospective`](skills/outer-harness-retrospective/SKILL-ja.md) が分析と提案を行う。 |
-| 証拠取得スクリプト | 実装済み | Skill の `scripts/` に同梱し、メタデータを取得する。 |
+| 選択済みセッションの読み取り | 手順を用意済み | エージェントが `agent-sessions` の公開 CLI を直接使い、会話本文を読む。 |
+| 試行用のメタデータ取得ヘルパー | 実装済み | 範囲を限定したメタデータの試行用として、Skill の `scripts/` に残している。 |
 | 実行可能な評価ケース | 用意済み | Skill の [`evals`](skills/outer-harness-retrospective/evals/README.md) で架空のデータを使って評価する。 |
 | 振り返りの継続 | 今後の課題 | 現在の Skill は結果を保存しない。 |
 
@@ -109,19 +110,36 @@ Skill はバックグラウンドでセッションを監視しない。
 
 ```mermaid
 flowchart TD
-    source["agent-sessions v2"] --> helper["取得スクリプト"]
-    helper --> metadata["メタデータ"]
-    source --> excerpts["選択・機密性確認済みの抜粋"]
-    metadata --> review["振り返り Skill"]
-    excerpts --> review
+    source["agent-sessions v2"] --> bodies["選択した発言・ツールの本文"]
+    bodies --> review["振り返り Skill に従うエージェント"]
     scope["振り返りの対象範囲"] --> review
     harness["現在の指示・設定など"] --> review
     review --> result["所見と判断結果"]
 ```
 
+### 選んだ会話を読む
+
+利用できる `agent-sessions` の実行ファイルを使い、本文を読む前に、許可された情報源参照とイベント数の上限を決める。\
+実行ファイルの導入と更新は、振り返りとは分けて行う。
+
+1. **情報源の確認**: `show <source-ref>` で識別情報と関係を確認する。
+2. **取得前の版の検証**: `verify <source-ref>` を使い、検証済みの版を保持する。
+3. **会話の取得**: `events --limit N <source-ref>` を使い、続きは `next_cursor` を `--cursor` に渡して、合意した上限内で読む。
+4. **取得後の版の検証**: 再び `verify <source-ref>` を使い、前後の検証済みの版が一致した場合だけ証拠を使う。
+
+取得中は、同じ実行ファイルと情報源の設定を使う。\
+各応答の `v2` のスキーマと欠落を確認し、本文を非公開のまま扱う。\
+部分的な取得を完全な取得と表現しない。\
+メタデータだけでは、エージェントの行動を裏付けられない。
+
+リポジトリによる情報源の選択は、[agent-sessions #25](https://github.com/mtk177a/agent-sessions/issues/25) に依存する。\
+利用できるようになるまでは、明示的に選んだ情報源参照を使う。\
+リポジトリへの所属を推測したり、プロバイダー固有のファイルを解析したりしない。
+
 ### セッションの証拠を取得する
 
-試行用のスクリプトは、Skill の分析に使うため、対象を限定したセッションのメタデータを用意する。
+残している試行用スクリプトは、対象を限定したセッションのメタデータを用意する。\
+上の直接読み取る手順とは別の経路であり、会話本文は渡さない。
 
 #### 実行に必要なもの
 

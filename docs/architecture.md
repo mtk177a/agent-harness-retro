@@ -37,13 +37,26 @@ A finding can report a provider limitation without proposing an outer-harness wo
 | [Python launcher](../skills/outer-harness-retrospective/scripts/run.py) | Prepare a pinned `agent-sessions` executable in a private temporary directory, then run the acquisition helper. |
 | [Go acquisition helper](../skills/outer-harness-retrospective/scripts/retro-pilot) | Select a bounded set of session sources and produce content-free metadata. |
 
-The Skill accepts supplied `agent-sessions` evidence or invokes the bundled acquisition script.\
+The agent follows the Skill to read selected conversation bodies directly through the public `agent-sessions` CLI, or uses sufficient supplied evidence.\
 It needs a bounded review scope, evidence with provenance and completeness information, and observations of the relevant current harness.
 
 The Skill stops at a report.\
 It does not save private retrospective state or apply proposals to harness files.
 
+### Direct session reads
+
+Select authorized source references and an event budget before reading bodies.\
+Use `show` to confirm each source, `verify` before and after the `events` pages, and retain source versions and event indexes with observations.\
+Keep the executable and source configuration unchanged throughout the read.\
+A changed or unavailable verified version prevents using the read as material support.
+
+Check `v2` schemas, page coverage, and omissions; partial evidence supports only claims unaffected by its omissions.\
+Installation and updates are separate from analysis.\
+Repository-based source discovery awaits [agent-sessions #25](https://github.com/mtk177a/agent-sessions/issues/25); explicit source selection works with the existing CLI.
+
 ### Acquisition flow
+
+The following flow belongs to the retained metadata pilot helper, not the direct-reading Skill workflow.
 
 1. **Check the executable**
 
@@ -97,8 +110,8 @@ A lineage containing one of these events is excluded.
 The metadata handoff records the selected sources, checked versions, and event counts.\
 It does not contain enough information to support findings about agent behavior.
 
-To analyze behavior, the Skill also needs deliberately selected excerpts that have been checked for private information, or other bounded observations.\
-Link each excerpt or observation to its verified source version and event indexes.\
+Direct CLI reads provide behavioral evidence; a review supplied only with pilot metadata still needs bounded body observations.\
+Keep the bodies private and link observations to their verified source versions and event indexes.\
 The acquisition helper does not analyze findings, inspect the current harness, or choose a response.
 
 ## Retrospective analysis

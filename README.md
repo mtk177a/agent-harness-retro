@@ -44,7 +44,8 @@ The Skill does not apply the proposed edit; you decide whether to make it.
 | Item | Status | Details |
 | --- | --- | --- |
 | Retrospective Skill | Implemented | [`outer-harness-retrospective`](skills/outer-harness-retrospective/SKILL.md) analyzes evidence and proposes improvements. |
-| Evidence acquisition script | Implemented | Bundled under the Skill's `scripts/` directory to acquire metadata. |
+| Selected-session reading | Available workflow | The agent uses the public `agent-sessions` CLI directly to read conversation bodies. |
+| Pilot metadata helper | Implemented | Retained under the Skill's `scripts/` directory for the bounded metadata pilot. |
 | Executable evaluation cases | Available | The Skill's [`evals`](skills/outer-harness-retrospective/evals/README.md) directory contains cases that use fictional data. |
 | Review continuity | Future work | The current Skill does not save findings between reviews. |
 
@@ -106,19 +107,34 @@ The Skill does not monitor sessions in the background.
 
 ```mermaid
 flowchart TD
-    source["agent-sessions v2"] --> helper["Acquisition script"]
-    helper --> metadata["Metadata"]
-    source --> excerpts["Selected, privacy-checked excerpts"]
-    metadata --> review["Retrospective Skill"]
-    excerpts --> review
+    source["agent-sessions v2"] --> bodies["Selected message and tool bodies"]
+    bodies --> review["Agent following the retrospective Skill"]
     scope["Review target and scope"] --> review
     harness["Current instructions and configuration"] --> review
     review --> result["Findings and decisions"]
 ```
 
+### Read selected conversations
+
+Use an available `agent-sessions` executable and select the authorized source references and event budget before reading bodies.\
+Installing or updating the executable is separate from the review.
+
+1. **Confirm the source**: Use `show <source-ref>` to check its identity and relationships.
+2. **Verify before reading**: Use `verify <source-ref>` and retain the verified version.
+3. **Read the conversation**: Use `events --limit N <source-ref>`, following `next_cursor` with `--cursor` within the agreed budget.
+4. **Verify after reading**: Use `verify <source-ref>` again and use the evidence only if both verified versions match.
+
+Use the same executable and source configuration throughout the read.\
+Check each response's `v2` schema and omissions, keep bodies private, and do not describe a partial read as complete.\
+Metadata alone does not establish agent behavior.
+
+Repository-based source selection depends on [agent-sessions #25](https://github.com/mtk177a/agent-sessions/issues/25).\
+Until it is available, use explicitly selected source references; do not infer repository membership or parse provider-native files.
+
 ### Acquire session evidence
 
-The pilot script prepares a limited set of session metadata for the Skill's analysis.
+The retained pilot script prepares a limited set of session metadata.\
+It is separate from the direct-reading workflow above and does not supply conversation bodies.
 
 #### Requirements
 
