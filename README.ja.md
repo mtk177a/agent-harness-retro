@@ -1,7 +1,7 @@
 # agent-harness-retro
 
-これは [`README.md`](README.md) の日本語参考訳です。\
-英語版が正式な README であり、差異がある場合は英語版を優先してください。
+これは [`README.md`](README.md) の日本語参考訳である。\
+英語版が正式な README であり、差異がある場合は英語版を優先する。
 
 `agent-harness-retro` は、Codex や Claude Code などのコーディングエージェントによる過去の作業を振り返る Skill である。\
 選んだセッションの記録を、現在の指示や設定と照らし合わせる。\

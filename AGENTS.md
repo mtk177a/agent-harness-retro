@@ -177,7 +177,7 @@ When changing an architectural invariant:
 
   - **Maintained pairs**: Follow the file pairs and synchronization rules in the [language policy](docs/localization.md#maintaining-japanese-references).
   - **Updates**: When adding or changing a maintained English file, use the repository-local [translation maintenance Skill](.agents/skills/maintain-japanese-references/SKILL.md) to create or review its Japanese reference in the same change.
-  - **Unchanged meaning**: If the English edit does not affect Japanese meaning, leave the reference unchanged and record the reason in the pull request's Validation or Risks / Follow-up section.
+  - **Unchanged meaning**: If the English edit does not affect Japanese meaning, leave the reference unchanged and record the reason in the pull request's `検証` (Validation), `リスク` (Risks), or `残る作業` (Follow-up) section.
   - **ADRs**: Do not translate ADRs as part of the maintained set.
   - **Authority**: Japanese references, including [AGENTS-ja.md](AGENTS-ja.md), define no independent requirements or authority; the English source takes precedence.
 

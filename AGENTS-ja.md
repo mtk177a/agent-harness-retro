@@ -181,7 +181,7 @@
 
   - **維持対象の組**: 翻訳の組と同期の規則は、[言語方針](docs/localization.md#maintaining-japanese-references) に従う。
   - **更新**: 維持対象の英語ファイルを追加・変更するときは、リポジトリローカルの [翻訳保守 Skill](.agents/skills/maintain-japanese-references/SKILL.md) を使い、同じ変更内で日本語参考訳を作成するかレビューする。
-  - **意味が変わらない場合**: 英語版の編集が日本語の意味に影響しない場合は、参考訳を変更せず、Pull Request の Validation または Risks / Follow-up セクションに理由を記録する。
+  - **意味が変わらない場合**: 英語版の編集が日本語の意味に影響しない場合は、参考訳を変更せず、Pull Request の `検証`、`リスク`、`残る作業` のいずれかのセクションに理由を記録する。
   - **ADR**: 維持対象の一部として ADR を翻訳しない。
   - **優先する情報源**: [AGENTS-ja.md](AGENTS-ja.md) を含む日本語参考訳は独立した要件や権限を定めず、英語版を優先する。
 
