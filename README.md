@@ -11,7 +11,6 @@ It proposes changes with supporting evidence and a way to check their effect.
 - [Review workflow](#review-workflow)
 - [Review criteria](#review-criteria)
 - [Information handling](#information-handling)
-- [Acquisition script maintenance](#acquisition-script-maintenance)
 - [Documentation](#documentation)
 - [License](#license)
 
@@ -45,7 +44,6 @@ The Skill does not apply the proposed edit; you decide whether to make it.
 | --- | --- | --- |
 | Retrospective Skill | Implemented | [`outer-harness-retrospective`](skills/outer-harness-retrospective/SKILL.md) analyzes evidence and proposes improvements. |
 | Selected-session reading | Available workflow | The agent uses the public `agent-sessions` CLI directly to read conversation bodies. |
-| Pilot metadata helper | Implemented | Retained under the Skill's `scripts/` directory for the bounded metadata pilot. |
 | Executable evaluation cases | Available | The Skill's [`evals`](skills/outer-harness-retrospective/evals/README.md) directory contains cases that use fictional data. |
 | Review continuity | Future work | The current Skill does not save findings between reviews. |
 
@@ -130,106 +128,6 @@ Metadata alone does not establish agent behavior.
 
 Repository-based source selection depends on [agent-sessions #25](https://github.com/mtk177a/agent-sessions/issues/25).\
 Until it is available, use explicitly selected source references; do not infer repository membership or parse provider-native files.
-
-### Acquire session evidence
-
-The retained pilot script prepares a limited set of session metadata.\
-It is separate from the direct-reading workflow above and does not supply conversation bodies.
-
-#### Requirements
-
-- Python 3
-- Git
-- Go 1.26 or later
-- Network access to the public `agent-sessions` repository for a normal run
-
-#### Run the script
-
-##### Normal run
-
-Run from the repository root:
-
-```sh
-python3 skills/outer-harness-retrospective/scripts/run.py
-```
-
-##### Offline run
-
-For an offline run, add `--agent-sessions-bin <absolute-path>` to use an existing executable instead of fetching and building one.
-
-```sh
-python3 skills/outer-harness-retrospective/scripts/run.py \
-  --agent-sessions-bin /absolute/path/to/agent-sessions
-```
-
-The script checks the executable against the commit in `agent-sessions.commit` and requires a clean source build.
-
-##### Common options
-
-- **Configuration file:** For a normal or offline run, add `--config <absolute-path>` to use an existing `agent-sessions` configuration.
-
-#### Evidence selection
-
-**Review period**
-
-The pilot fixes the review period when it starts and uses the preceding 14 days for Codex and Claude Code.
-
-**Session grouping**
-
-To avoid counting a resumed or forked conversation as a separate occurrence, the script groups explicitly related sessions into a **logical lineage**.
-
-**Count limits**
-
-| Counted item | Limit |
-| --- | --- |
-| Candidate lineages examined | At most ten for each provider. |
-| Complete, independent lineages required | At least three from each provider. |
-| Included events, such as messages and tool calls | At most 2,000 in total. |
-
-These numbers limit this pilot run; they do not define how many occurrences justify a permanent rule.
-
-**Insufficient evidence**
-
-The pilot returns `insufficient_evidence` when it cannot establish a complete selection, for example because:
-
-- **Unknown review period:** The review period cannot be established.
-- **Unsupported response schema:** An `agent-sessions` response is missing `schema_version` or uses a schema other than `v2`.
-- **Missing records:** Required records are missing.
-- **Missing event details:** Required event details are missing.
-- **Unverified source versions:** Source versions cannot be verified.
-- **Changed source versions:** A source version changes during collection.
-- **Mixed recording sources:** Selected records for the same provider come from multiple recording sources (`source_instance`).
-- **Too few lineages:** Too few complete, independent lineages fit within the limits above.
-
-#### Use the acquisition result
-
-**Output**
-
-The `v2` interface does not guarantee automatic removal of private information from event bodies.\
-The script therefore writes only metadata to a temporary file, without event bodies.
-
-| Output | Contents |
-| --- | --- |
-| Private temporary file outside this repository | Evidence metadata, such as source references, versions, event indexes, and event types. |
-| Standard output | Acquisition status.<br>Aggregate counts. |
-| Standard error | The location of the private metadata file. |
-
-**Handoff steps**
-
-1. **Supply the metadata:** Pass the script's metadata file to the Skill.
-
-2. **Supply current harness information:** Provide relevant files or observations that identify what was checked.
-
-3. **Select excerpts:** Choose the session excerpts to use in the analysis.
-
-4. **Check privacy:** Check the selected excerpts for private information.
-
-5. **Supply the excerpts**
-
-   Pass the checked excerpts to the Skill separately from the metadata.\
-   Metadata alone cannot show what an agent did or why.
-
-6. **Remove the temporary file:** Delete the metadata file after the review.
 
 ### Read the analysis result
 
@@ -338,46 +236,6 @@ Use synthetic data for examples and tests.\
 The [public information boundary](AGENTS.md#public-information-boundary) lists the full publication rules.
 
 The [Architecture](docs/architecture.md#private-retrospective-state) describes possible future records and their storage constraints.
-
-## Acquisition script maintenance
-
-### Launcher operation
-
-During a normal run, the [`run.py`](skills/outer-harness-retrospective/scripts/run.py) launcher:
-
-1. **Fetch source:** Downloads the commit recorded in [`agent-sessions.commit`](skills/outer-harness-retrospective/scripts/retro-pilot/internal/pilot/agent-sessions.commit).
-
-2. **Build:** Creates an executable in a private temporary directory.
-
-3. **Start the helper:** Runs the bundled Go helper with the executable.
-
-4. **Verify the build**
-
-   The helper checks the executable's Go build information:
-
-   - **Commit:** It matches the recorded commit.
-   - **Source tree:** It was unchanged when built.
-
-5. **Remove temporary files:** Deletes the downloaded source and built executable after the run.
-
-The launcher does not install a global executable.\
-The upstream source is [`mtk177a/agent-sessions`](https://github.com/mtk177a/agent-sessions), under the MIT license.
-
-### Update the pinned version
-
-1. **Review the upstream changes**
-
-   - **Interface:** Check changes to the public contract.
-   - **License:** Check changes to the license.
-
-2. **Change the pinned commit:** Update [`agent-sessions.commit`](skills/outer-harness-retrospective/scripts/retro-pilot/internal/pilot/agent-sessions.commit).
-
-3. **Verify the change**
-
-   Before using real sessions, run the checks in [Evaluation and Skill audit](docs/evaluation.md):
-
-   - Go checks.
-   - Python checks.
 
 ## Documentation
 

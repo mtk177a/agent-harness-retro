@@ -141,28 +141,6 @@ python3 scripts/check_repository.py
 
 This checks maintained translation pairs, Skill metadata, executable definitions, and any current compact report without calling a model.
 
-### Acquisition script checks
-
-When changing the bundled acquisition scripts, also perform these checks:
-
-- **Python tests**
-
-  Run from the repository root:
-
-  ```sh
-  python3 -m unittest discover -s skills/outer-harness-retrospective/scripts -p 'test_*.py'
-  ```
-
-- **Go tests**
-
-  Run from `skills/outer-harness-retrospective/scripts/retro-pilot`:
-
-  ```sh
-  go test ./...
-  ```
-
-- **Pinned build:** Verify that the pinned source builds without reading real sessions.
-
 ## Run model evaluations
 
 ### Evaluation plan
@@ -194,8 +172,7 @@ Use a compatible runner that supports:
 The `mtk177a/skills` runner `scripts/run_skill_evaluation.py`, with its adjacent `evaluation_contract.py`, is one compatible implementation.\
 It accepts this repository through `--root`.
 
-Keep its plan, run, and grading artifacts in a temporary directory.\
-Do not add that checkout as a runtime dependency of the pilot helper.
+Keep its plan, run, and grading artifacts in a temporary directory.
 
 ### Execution
 

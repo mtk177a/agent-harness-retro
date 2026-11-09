@@ -144,28 +144,6 @@ python3 scripts/check_repository.py
 
 管理対象の訳文の組、Skill のメタデータ、実行可能な評価定義、現在の短い評価記録を、モデルを呼ばずに確認できる。
 
-### 取得スクリプトの検査
-
-同梱の取得スクリプトを変更した場合は、次の検査も行う。
-
-- **Python のテスト**
-
-  リポジトリのルートから実行する。
-
-  ```sh
-  python3 -m unittest discover -s skills/outer-harness-retrospective/scripts -p 'test_*.py'
-  ```
-
-- **Go のテスト**
-
-  `skills/outer-harness-retrospective/scripts/retro-pilot` から実行する。
-
-  ```sh
-  go test ./...
-  ```
-
-- **固定コミットのビルド:** 実セッションを読まずに、固定したコミットのソースをビルドできるか確認する。
-
 ## モデルを使って評価する
 
 ### 評価計画
@@ -197,8 +175,7 @@ python3 scripts/check_repository.py
 `mtk177a/skills` の `scripts/run_skill_evaluation.py` と、隣接する `evaluation_contract.py` は、対応する実装の 1 つである。\
 `--root` でこのリポジトリを指定できる。
 
-計画、実行結果、採点のファイルは、一時ディレクトリに置く。\
-そのチェックアウトを、試行用補助コマンドの実行時依存に追加しない。
+計画、実行結果、採点のファイルは、一時ディレクトリに置く。
 
 ### 実行
 
