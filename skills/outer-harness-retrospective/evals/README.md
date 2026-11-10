@@ -7,7 +7,7 @@ All sources and harness artifacts in the cases are invented.
 
 ### Behavior
 
-[`evals.json`](evals.json) contains 19 cases.\
+[`evals.json`](evals.json) contains 21 cases.\
 Each case also checks that the response stops at proposals, without harness edits or Issue posting.
 
 | Check | Cases | Failure to look for |
@@ -24,6 +24,8 @@ Each case also checks that the response stops at proposals, without harness edit
 | Missing event time | `case-17` | An unavailable time inferred from surrounding records. |
 | Direct acquisition | `case-18` | Metadata substituted for recorded bodies, pages skipped, or source versions left unchecked. |
 | Unavailable direct evidence | `case-19` | An unsupported source used for a behavioral finding or read through provider-native files. |
+| Changing source revision | `case-20` | Bodies from an unstable read used as verified behavioral evidence. |
+| Event budget | `case-21` | Extra events read beyond the budget, or unread context treated as complete. |
 
 ### Skill selection
 
@@ -53,20 +55,24 @@ These cases do not authorize real session access, target harness writes, or publ
 
 ### Direct acquisition fixture
 
-[`fixtures/direct-acquisition`](fixtures/direct-acquisition/README.md) supplies synthetic Codex and Claude Code stores and current harness files for `case-18` and `case-19`.\
+[`fixtures/direct-acquisition`](fixtures/direct-acquisition/README.md) supplies synthetic Codex and Claude Code stores and current harness files for `case-18` through `case-21`.\
 Use a real `agent-sessions` executable with an explicit configuration pointing only to disposable copies of those stores.\
 Give the executor the selected references and acquisition bounds in `request.json`, not the grading assertions.\
 Observe CLI commands, returned bodies, source versions, and the final analysis; a static fixture check alone does not establish model behavior.
 
 ### Direct acquisition results
 
-The [compact report](report.json) records a targeted candidate run of `case-18` and `case-19` on Codex CLI.\
-Both passed: the agent read and analyzed 16 synthetic events through the public CLI, and treated unsupported conversation bodies as unavailable evidence.\
-The trace showed explicit Skill loading; this does not establish automatic selection or behavior on real sessions.
+The [boundary evaluation record](report.json) records passing runs of `case-20` and `case-21` with GPT 6.1 Sol on Codex CLI `0.167.0`.\
+The agent rejected a read whose verified version changed and respected a three-event budget without inferring unread corrections or results.\
+Both runs kept independently supported current-harness findings separate from the conversation-dependent `insufficient_evidence` decisions.
+
+The [earlier direct acquisition report](history/2026-11-09-direct-acquisition-report.json) records passing runs of `case-18` and `case-19` on Codex CLI.\
+The agent read and analyzed 16 synthetic events through the public CLI, and treated unsupported conversation bodies as unavailable evidence.\
+These runs used explicit Skill invocation and do not establish automatic selection or behavior on real sessions.
 
 ## Historical records
 
-These records describe earlier Skill revisions; they do not validate the current revision.
+These records apply only to their recorded candidates and inputs.
 
 | Record | What it contains |
 | --- | --- |

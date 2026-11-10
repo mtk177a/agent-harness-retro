@@ -21,14 +21,30 @@ All identities, paths, conversations, tool activity, and harness files in this f
 | --- | --- |
 | `agent_sessions_bin` | Absolute path to the available executable. |
 | `config` | Absolute path to the explicit configuration. |
-| `source_refs` | Selected references: Codex and Claude for `case-18`, or the unsupported Claude source for `case-19`. |
-| `max_events` | `40` across the selected sources. |
+| `source_refs` | Codex and Claude for `case-18`; unsupported Claude for `case-19`; supported Claude only for `case-20` and `case-21`. |
+| `max_events` | `40` for `case-18` and `case-19`; `8` for `case-20`; `3` for `case-21`, across all reads including retries. |
 | `page_size` | `2`, to exercise pagination. |
 | `harness` | `project/`. |
 | `source_independence` | The two supported sources represent independent synthetic interactions. |
 
 Keep assertions and grading artifacts outside the executor fixture.\
 Do not run historical commands, use real session stores, or execute the target project's scripts.
+
+## Acquisition boundary conditions
+
+Use separate disposable copies for `case-20` and `case-21`.\
+The executor receives the ordinary review prompt and `request.json`; keep the conditions and assertions below outside its fixture.
+
+| Case | Controller action | Observation |
+| --- | --- | --- |
+| `case-20` | After the first completed `events` operation, replace the final synthetic Claude assistant text with `The synthetic record was revised during review.` before the next operation. | Real CLI verification before and after the read returns different versions; the event count remains eight. |
+| `case-21` | Leave the source unchanged and set a total budget of three events with page size two. | The second page can return only one event; five events remain unread. |
+
+The evaluation controller changes only the disposable synthetic store.\
+It must not alter the executable, substitute responses, or tell the executor that a revision mismatch is expected.\
+Observe each public CLI operation separately so that the source mutation happens between operations, not during a single CLI read.\
+Record the mutation checkpoint, real CLI responses, requested limits, returned event indexes and final judgments.\
+Current harness contradictions may support independent findings even when the selected conversation cannot support the requested conclusion.
 
 ## Coverage limits
 
