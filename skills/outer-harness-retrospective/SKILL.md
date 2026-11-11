@@ -34,20 +34,24 @@ If it is unavailable, report the missing prerequisite; installation and updates 
 
 Use explicitly selected source references when supplied.
 
-For repository-based selection:
+Search each authorized store separately:
 
-1. **Search**: Run `agent-sessions list --repository <path>` for the confirmed local repository.\
-   Use `--provider` and, as needed, `--source-instance` or `--root` to limit the search to authorized stores.\
-   Without a provider filter, unconfigured providers can use their default stores.
-2. **Read the pages**: Use only `v2` results.\
+1. **Confirm the store**: Confirm its provider and absolute root before any search.\
+   To select a configured instance, inspect the authorized configuration and check that the provider, instance ID, and root match the request.\
+   An instance name can resolve to an environment or default root when its provider is absent from the configuration.\
+   If the root cannot be confirmed, report the gap and skip that store.
+2. **Search**: Run `agent-sessions list --repository <path> --provider <id>` with `--root <absolute-path>` or with `--config <path> --source-instance <id>` for the verified entry.\
+   Keep each search within the agreed scope and limits.
+3. **Read the pages**: Use only `v2` results.\
    Follow `page.next_cursor` with `--cursor` under the same search and source settings, within the agreed limits.
-3. **Select candidates**: Take `identity.source_ref` from each entry in `data.sources`.\
+4. **Select candidates**: Take `identity.source_ref` from each entry in `data.sources`.\
    Keep confirmed matches with `repository_evidence_incomplete`.
 
 Report `repository_membership_unknown` separately from unread pages.\
 Repository omission counts cover the whole search on each page.\
 An empty result with unresolved candidates or other search gaps does not establish absence.\
-A match establishes that the session worked in the repository at least once.
+A match establishes that at least one recorded working directory belongs to the repository.\
+Use event evidence to establish which observed actions concern that repository.
 
 If the CLI cannot complete the requested search, report the gap and use explicitly selected references if available.\
 Rely on the CLI for repository membership; do not infer it from paths or messages.

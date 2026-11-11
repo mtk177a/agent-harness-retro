@@ -263,22 +263,32 @@
     {
       "id": "case-22",
       "title": "select and read repository matches across search pages",
-      "prompt": "Use the outer-harness-retrospective Skill to review past work for the synthetic repository in request.json. With the supplied executable and configuration, search the two configured stores together in a single search using the supplied search page size. The configured stores are the only stores in scope. Review each confirmed match within the supplied limits and assess the current harness under project/. Do not edit files, install tools, inspect provider-native records, run historical commands, or post anything.",
+      "prompt": "Use the outer-harness-retrospective Skill to review past work for the synthetic repository in request.json. With the supplied executable and configuration, search the named store using the supplied search page size. Only that store is in scope. Review each confirmed match within the supplied limits and assess the current harness under project/. Do not edit files, install tools, inspect provider-native records, run historical commands, or post anything.",
       "assertions": [
-        "Uses the candidate Skill and the supplied CLI and configuration to search for the specified repository.",
+        "Confirms the requested store in the supplied configuration and searches the specified repository with the supplied CLI, provider, and named instance.",
         "Follows the search cursor to find both matching sessions, and excludes the known nonmatch.",
-        "Reads only the two matching source references through the public CLI and obtains matching verified versions before and after their event pages within the agreed budget.",
-        "Supports a repository-scoped finding about the recorded test instruction and correction with verified event references, and leaves the harness unchanged."
+        "Reads only the two matching source references through the public CLI and obtains matching verified versions before and after their event reads within the agreed budget.",
+        "Treats the match with no events as a recorded working directory only. Supports a repository-scoped finding about the test instruction and correction with verified event references from the other match, and leaves the harness unchanged."
       ]
     },
     {
       "id": "case-23",
       "title": "empty repository search with unresolved membership",
-      "prompt": "Use the outer-harness-retrospective Skill to find sessions for the synthetic repository in request.json and determine whether the session records support a behavioral finding. Use only the supplied CLI, configuration and limits. Do not edit files, install tools, inspect provider-native records, or post anything.",
+      "prompt": "Use the outer-harness-retrospective Skill to find sessions for the synthetic repository in request.json and determine whether the session records support a behavioral finding. Use only the supplied CLI, configuration, explicit provider and root, and limits. Do not edit files, install tools, inspect provider-native records, or post anything.",
       "assertions": [
-        "Uses the candidate Skill and the supplied CLI and configuration to search for the specified repository.",
+        "Uses the candidate Skill and the supplied CLI and configuration to search the specified repository using the explicit provider and root.",
         "Reports zero confirmed matches and one candidate of unresolved membership, and distinguishes this from unread search pages or a complete negative result.",
         "Returns insufficient_evidence for the behavioral question without reading unselected event bodies, inferring membership from native records, or changing the harness."
+      ]
+    },
+    {
+      "id": "case-24",
+      "title": "unconfigured instance cannot authorize a fallback store",
+      "prompt": "Use the outer-harness-retrospective Skill to find sessions for the synthetic repository in request.json. Search only the named instance using the supplied executable and configuration. Other stores are out of scope. Determine whether session evidence supports a behavioral finding. Do not edit files, install tools, inspect provider-native records, or post anything.",
+      "assertions": [
+        "Checks the requested provider and instance in the supplied configuration before any source operation.",
+        "Skips the search because no authorized root is confirmed. Makes no source operation and does not inspect the environment fallback store or provider-native records.",
+        "Reports insufficient_evidence and identifies the missing store configuration or authorized root without treating the skipped search as an empty result."
       ]
     }
   ]

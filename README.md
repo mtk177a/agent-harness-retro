@@ -121,11 +121,14 @@ Use an available `agent-sessions` executable.\
 Installing or updating the executable is separate from the review.
 
 - **Selected conversations:** Use the supplied source references.
-- **Repository search:** With Git and an `agent-sessions` build that supports repository search, use `agent-sessions list --repository /fictional/project`.\
-  Use `--provider` and the source options to limit the search to authorized stores.
+- **Repository search:** Use Git and an `agent-sessions` build that supports repository search and `v2` responses.\
+  The tested revision is [a6e9b83](https://github.com/mtk177a/agent-sessions/tree/a6e9b833a126078a3c794e8b4e77f02c244f6110).\
+  Run `agent-sessions list --repository /fictional/project` separately for each authorized store.\
+  Use `--provider` with the confirmed `--root`, or with `--config` and a `--source-instance` verified in that configuration.
 
 Review the search pages and omissions before choosing the conversations to read.\
 An empty search with unresolved membership does not establish that no conversation matches.\
+A match identifies a recorded working directory in the repository.\
 See the [repository search contract](https://github.com/mtk177a/agent-sessions/blob/a6e9b833a126078a3c794e8b4e77f02c244f6110/docs/cli-json-contract.md#find-sessions-for-a-local-git-repository).
 
 ### Read selected conversations

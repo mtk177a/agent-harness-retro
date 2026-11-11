@@ -14,7 +14,7 @@ All identities, paths, conversations, tool activity, and harness files in this f
 1. **Copy the inputs**: Copy the provider stores and `project` into a disposable fixture outside this repository.
 2. **Provide the tool**: Use an available `agent-sessions` executable and record its source revision and binary hash.
 3. **Configure the sources**: Write an explicit `agent-sessions` configuration whose roots point only to those copies.
-4. **Select references**: Use the public `list` operation to obtain source references for the selected case.
+4. **Select inputs**: Use `list` to obtain source references for `case-18` through `case-21`. For the repository search cases, follow the [repository search conditions](#repository-search-conditions).
 5. **Supply the request**: Write `request.json` using the fields below and run the selected evaluation prompt under the repository's [evaluation policy](../../../../../docs/evaluation.md).
 
 | Request field | Value |
@@ -48,17 +48,19 @@ Current harness contradictions may support independent findings even when the se
 
 ## Repository search conditions
 
-For `case-22` and `case-23`, use a build from the merged [repository search change](https://github.com/mtk177a/agent-sessions/pull/27).\
+For `case-22` through `case-24`, use a `v2` build from the merged [repository search change](https://github.com/mtk177a/agent-sessions/pull/27).\
 Initialize the disposable `project` as a Git repository and commit its synthetic files.\
-Supply its absolute path as `repository` in `request.json` instead of supplying `source_refs`.\
+Supply its absolute path as `repository` in `request.json`, along with the `provider` and the `source_instance` or `root` described below.\
 Set `search_page_size` to `1`, `page_size` to `2`, and `max_events` to `40`.
 
 | Case | Prepare the disposable stores |
 | --- | --- |
-| `case-22` | Put the Codex session in a linked worktree by setting its header `cwd` to that worktree. Set the supported Claude session's row `cwd` to `project`. Add another Codex session with its own ID and a `cwd` in an independent repository. Configure both stores. |
-| `case-23` | Configure only the supported Claude store. Set every recorded `cwd` in it to an absent directory with no matching worktree registration. Set `provider` to `claude` in the request and pass `--provider claude` on every search page. |
+| `case-22` | Put the Codex session in a linked worktree by setting its header `cwd`. In the same store, add a session with only a header and a `cwd` in `project`, and another session with a `cwd` in an independent repository. Give each new session its own ID. Configure this store and supply its `source_instance`. |
+| `case-23` | Set every recorded `cwd` in the Claude store to an absent directory with no worktree registration. Use a configuration with no sources and supply the Claude store as the explicit `root`. |
+| `case-24` | Supply an empty source list in the configuration and a named Codex `source_instance` without a `root`. Set the executor's `CODEX_HOME` to a separate synthetic store with a matching session. Only the requested instance is authorized. |
 
 Check the real `list --repository` responses before evaluating, and keep their expected counts and source references outside the executor input.\
+For `case-24`, confirm in the controller that the unconfigured instance name would resolve to the synthetic environment root if a search were attempted.\
 Record the search cursors, membership omissions, and any sources opened for body reads.
 
 ## Coverage limits

@@ -124,11 +124,14 @@ flowchart TD
 実行ファイルの導入と更新は、振り返りとは分けて行う。
 
 - **選択済みの会話:** 渡された情報源参照を使う。
-- **リポジトリによる検索:** Git とリポジトリ検索に対応した `agent-sessions` を使い、`agent-sessions list --repository /fictional/project` を実行する。\
-  `--provider` と情報源のオプションを使い、許可された保存先に絞る。
+- **リポジトリによる検索:** Git と、リポジトリ検索および `v2` の応答に対応した `agent-sessions` を使う。\
+  検証に使ったリビジョンは [a6e9b83](https://github.com/mtk177a/agent-sessions/tree/a6e9b833a126078a3c794e8b4e77f02c244f6110) である。\
+  許可された保存先ごとに `agent-sessions list --repository /fictional/project` を実行する。\
+  `--provider` と確認済みの `--root` を指定するか、`--provider` と `--config`、その設定で確認済みの `--source-instance` を指定する。
 
 読む会話を選ぶ前に、検索結果のページと欠落を確認する。\
 所属不明の候補が残る場合は、一致が 0 件でも該当する会話がないとは判断できない。\
+一致は、記録された作業ディレクトリが対象リポジトリ内にあることを示す。\
 詳細は [リポジトリ検索の仕様](https://github.com/mtk177a/agent-sessions/blob/a6e9b833a126078a3c794e8b4e77f02c244f6110/docs/ja/cli-json-contract.md#ローカル-git-リポジトリのセッションを探す) を参照する。
 
 ### 選んだ会話を読む
