@@ -39,6 +39,7 @@ External contributors are not required to write Japanese.
 | --- | --- |
 | [`README.md`](../README.md) | [`README.ja.md`](../README.ja.md) |
 | [`AGENTS.md`](../AGENTS.md) | [`AGENTS-ja.md`](../AGENTS-ja.md) |
+| [`CONTRIBUTING.md`](../CONTRIBUTING.md) | [`CONTRIBUTING-ja.md`](../CONTRIBUTING-ja.md) |
 | [`docs/architecture.md`](architecture.md) | [`docs/ja/architecture.md`](ja/architecture.md) |
 | [`docs/evaluation.md`](evaluation.md) | [`docs/ja/evaluation.md`](ja/evaluation.md) |
 | [`docs/glossary.md`](glossary.md) | [`docs/ja/glossary.md`](ja/glossary.md) |

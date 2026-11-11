@@ -18,7 +18,7 @@
 
 網羅性を増やすためだけに、無関係なファイルを調べない。
 
-Issue、検証、コミット、Pull Request の進め方は、[貢献ガイド](CONTRIBUTING.md) に従う。
+Issue、検証、コミット、Pull Request の手順は、[コントリビューションガイド](CONTRIBUTING-ja.md) に従う。
 
 ## 設計上の境界
 
