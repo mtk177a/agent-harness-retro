@@ -27,14 +27,35 @@ Confirm the requested scope and target repository, or an explicit global target.
 
 Use supplied evidence when sufficient.
 
-#### Read selected sessions
+#### Select sessions
 
-Use an available `agent-sessions` executable directly to read conversation content.\
+Use an available `agent-sessions` executable directly for session selection and reading.\
 If it is unavailable, report the missing prerequisite; installation and updates are separate from this review.
 
+Use explicitly selected source references when supplied.
+
+For repository-based selection:
+
+1. **Search**: Run `agent-sessions list --repository <path>` for the confirmed local repository.\
+   Use `--provider` and, as needed, `--source-instance` or `--root` to limit the search to authorized stores.\
+   Without a provider filter, unconfigured providers can use their default stores.
+2. **Read the pages**: Use only `v2` results.\
+   Follow `page.next_cursor` with `--cursor` under the same search and source settings, within the agreed limits.
+3. **Select candidates**: Take `identity.source_ref` from each entry in `data.sources`.\
+   Keep confirmed matches with `repository_evidence_incomplete`.
+
+Report `repository_membership_unknown` separately from unread pages.\
+Repository omission counts cover the whole search on each page.\
+An empty result with unresolved candidates or other search gaps does not establish absence.\
+A match establishes that the session worked in the repository at least once.
+
+If the CLI cannot complete the requested search, report the gap and use explicitly selected references if available.\
+Rely on the CLI for repository membership; do not infer it from paths or messages.
+
+#### Read selected sessions
+
 Confirm the authorized `source_ref` values and event budget before reading bodies.\
-Use `list` and `show` for selection, not as evidence of agent behavior.\
-If the available CLI cannot establish the requested selection, ask for selected source references or report the gap; do not infer repository membership or inspect provider-native files.
+Use `list` and `show` for selection, not as evidence of agent behavior.
 
 For each selected source:
 
@@ -44,6 +65,7 @@ For each selected source:
 4. **Verify after reading**: Use `verify` again; if verification is unavailable or the versions differ, do not use the read as material support.
 
 Keep the same executable and source configuration throughout the read.\
+If selection used `--root`, pass that root to each source operation.\
 Check each response's schema and coverage as described below; distinguish pagination from other omissions, and do not describe a budget-limited read as a complete source.\
 Base behavioral observations on the recorded message and tool bodies, keeping their source version, event indexes, and reported uncertainty.\
 Read private bodies from the CLI output; if a temporary handoff is necessary, keep it outside the public repository and remove it after review.

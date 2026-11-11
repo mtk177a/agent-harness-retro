@@ -46,8 +46,23 @@ Observe each public CLI operation separately so that the source mutation happens
 Record the mutation checkpoint, real CLI responses, requested limits, returned event indexes and final judgments.\
 Current harness contradictions may support independent findings even when the selected conversation cannot support the requested conclusion.
 
+## Repository search conditions
+
+For `case-22` and `case-23`, use a build from the merged [repository search change](https://github.com/mtk177a/agent-sessions/pull/27).\
+Initialize the disposable `project` as a Git repository and commit its synthetic files.\
+Supply its absolute path as `repository` in `request.json` instead of supplying `source_refs`.\
+Set `search_page_size` to `1`, `page_size` to `2`, and `max_events` to `40`.
+
+| Case | Prepare the disposable stores |
+| --- | --- |
+| `case-22` | Put the Codex session in a linked worktree by setting its header `cwd` to that worktree. Set the supported Claude session's row `cwd` to `project`. Add another Codex session with its own ID and a `cwd` in an independent repository. Configure both stores. |
+| `case-23` | Configure only the supported Claude store. Set every recorded `cwd` in it to an absent directory with no matching worktree registration. Set `provider` to `claude` in the request and pass `--provider claude` on every search page. |
+
+Check the real `list --repository` responses before evaluating, and keep their expected counts and source references outside the executor input.\
+Record the search cursors, membership omissions, and any sources opened for body reads.
+
 ## Coverage limits
 
 The Codex legacy result bodies do not establish verified outcomes; the CLI reports `tool_outcome_unknown`.\
-The fixture does not test repository discovery, real sessions, installation, or implicit Skill selection.\
+The fixture uses synthetic sessions and a supplied executable with explicit Skill invocation.\
 Remove disposable stores and raw evaluation traces according to the evaluation plan.

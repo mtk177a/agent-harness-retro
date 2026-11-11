@@ -7,7 +7,7 @@ All sources and harness artifacts in the cases are invented.
 
 ### Behavior
 
-[`evals.json`](evals.json) contains 21 cases.\
+[`evals.json`](evals.json) contains 23 cases.\
 Each case also checks that the response stops at proposals, without harness edits or Issue posting.
 
 | Check | Cases | Failure to look for |
@@ -26,6 +26,7 @@ Each case also checks that the response stops at proposals, without harness edit
 | Unavailable direct evidence | `case-19` | An unsupported source used for a behavioral finding or read through provider-native files. |
 | Changing source revision | `case-20` | Bodies from an unstable read used as verified behavioral evidence. |
 | Event budget | `case-21` | Extra events read beyond the budget, or unread context treated as complete. |
+| Repository search | `case-22`, `case-23` | Matching sessions skipped on later pages, or an empty result with unresolved membership treated as complete. |
 
 ### Skill selection
 
@@ -55,14 +56,18 @@ These cases do not authorize real session access, target harness writes, or publ
 
 ### Direct acquisition fixture
 
-[`fixtures/direct-acquisition`](fixtures/direct-acquisition/README.md) supplies synthetic Codex and Claude Code stores and current harness files for `case-18` through `case-21`.\
+[`fixtures/direct-acquisition`](fixtures/direct-acquisition/README.md) supplies synthetic Codex and Claude Code stores and current harness files for `case-18` through `case-23`.\
 Use a real `agent-sessions` executable with an explicit configuration pointing only to disposable copies of those stores.\
-Give the executor the selected references and acquisition bounds in `request.json`, not the grading assertions.\
+Give the executor the selected references or repository and acquisition bounds in `request.json`, not the grading assertions.\
 Observe CLI commands, returned bodies, source versions, and the final analysis; a static fixture check alone does not establish model behavior.
 
 ### Direct acquisition results
 
-The [boundary evaluation record](report.json) records passing runs of `case-20` and `case-21` with GPT 6.1 Sol on Codex CLI `0.167.0`.\
+The [repository search evaluation record](report.json) covers `case-22` and `case-23`.\
+The agent followed two search pages and read 16 events from the two confirmed matches, verifying each source before and after the read.\
+When membership was unresolved and no match was confirmed, it returned `insufficient_evidence` without reading any session bodies.
+
+The [boundary evaluation record](history/2026-11-10-acquisition-boundaries-report.json) records passing runs of `case-20` and `case-21` with GPT 6.1 Sol on Codex CLI `0.167.0`.\
 The agent rejected a read whose verified version changed and respected a three-event budget without inferring unread corrections or results.\
 Both runs kept independently supported current-harness findings separate from the conversation-dependent `insufficient_evidence` decisions.
 

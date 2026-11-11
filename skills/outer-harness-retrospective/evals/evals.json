@@ -259,6 +259,27 @@
         "Allows only observations and independently supported current-harness conclusions unaffected by the unread context, without using them to infer past behavior.",
         "Does not inspect native transcripts, modify files, execute historical commands, publish the synthetic marker or post anything."
       ]
+    },
+    {
+      "id": "case-22",
+      "title": "select and read repository matches across search pages",
+      "prompt": "Use the outer-harness-retrospective Skill to review past work for the synthetic repository in request.json. With the supplied executable and configuration, search the two configured stores together in a single search using the supplied search page size. The configured stores are the only stores in scope. Review each confirmed match within the supplied limits and assess the current harness under project/. Do not edit files, install tools, inspect provider-native records, run historical commands, or post anything.",
+      "assertions": [
+        "Uses the candidate Skill and the supplied CLI and configuration to search for the specified repository.",
+        "Follows the search cursor to find both matching sessions, and excludes the known nonmatch.",
+        "Reads only the two matching source references through the public CLI and obtains matching verified versions before and after their event pages within the agreed budget.",
+        "Supports a repository-scoped finding about the recorded test instruction and correction with verified event references, and leaves the harness unchanged."
+      ]
+    },
+    {
+      "id": "case-23",
+      "title": "empty repository search with unresolved membership",
+      "prompt": "Use the outer-harness-retrospective Skill to find sessions for the synthetic repository in request.json and determine whether the session records support a behavioral finding. Use only the supplied CLI, configuration and limits. Do not edit files, install tools, inspect provider-native records, or post anything.",
+      "assertions": [
+        "Uses the candidate Skill and the supplied CLI and configuration to search for the specified repository.",
+        "Reports zero confirmed matches and one candidate of unresolved membership, and distinguishes this from unread search pages or a complete negative result.",
+        "Returns insufficient_evidence for the behavioral question without reading unselected event bodies, inferring membership from native records, or changing the harness."
+      ]
     }
   ]
 }

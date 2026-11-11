@@ -46,6 +46,7 @@ Skill は変更を適用せず、採用するかどうかは依頼者が決め�
 | 提供するもの | 状況 | 内容 |
 | --- | --- | --- |
 | 振り返りの Skill | 実装済み | [`outer-harness-retrospective`](skills/outer-harness-retrospective/SKILL-ja.md) が分析と提案を行う。 |
+| リポジトリによる検索 | 手順を用意済み | エージェントが `agent-sessions list --repository` を使い、ローカル Git リポジトリに関係する会話を探す。 |
 | 選択済みセッションの読み取り | 手順を用意済み | エージェントが `agent-sessions` の公開 CLI を直接使い、会話本文を読む。 |
 | 実行可能な評価ケース | 用意済み | Skill の [`evals`](skills/outer-harness-retrospective/evals/README.md) で架空のデータを使って評価する。 |
 | 振り返りの継続 | 今後の課題 | 現在の Skill は結果を保存しない。 |
@@ -102,23 +103,37 @@ Skill はバックグラウンドでセッションを監視しない。
 
 ### Skill に渡す情報を用意する
 
-- **セッションの証拠:** 今回の振り返りのために範囲を決めて選んだ記録。
+- **セッションの証拠:** 提供された証拠、選択済みの情報源参照、または検索を許可された記録の保存先。
 - **振り返りの対象:** 調べるリポジトリ、または共通の Skill などのグローバルなハーネス。
 - **現在のハーネス:** 関連ファイル、または何を確認したかを示す観測結果。
 
 ```mermaid
 flowchart TD
-    source["agent-sessions v2"] --> bodies["選択した発言・ツールの本文"]
+    source["agent-sessions v2"] --> selection["セッションの選択"]
+    scope["振り返りの対象範囲"] --> selection
+    selection --> bodies["選択した発言・ツールの本文"]
     bodies --> review["振り返り Skill に従うエージェント"]
-    scope["振り返りの対象範囲"] --> review
+    scope --> review
     harness["現在の指示・設定など"] --> review
     review --> result["所見と判断結果"]
 ```
 
+### 会話を選ぶ
+
+利用できる `agent-sessions` の実行ファイルを使う。\
+実行ファイルの導入と更新は、振り返りとは分けて行う。
+
+- **選択済みの会話:** 渡された情報源参照を使う。
+- **リポジトリによる検索:** Git とリポジトリ検索に対応した `agent-sessions` を使い、`agent-sessions list --repository /fictional/project` を実行する。\
+  `--provider` と情報源のオプションを使い、許可された保存先に絞る。
+
+読む会話を選ぶ前に、検索結果のページと欠落を確認する。\
+所属不明の候補が残る場合は、一致が 0 件でも該当する会話がないとは判断できない。\
+詳細は [リポジトリ検索の仕様](https://github.com/mtk177a/agent-sessions/blob/a6e9b833a126078a3c794e8b4e77f02c244f6110/docs/ja/cli-json-contract.md#ローカル-git-リポジトリのセッションを探す) を参照する。
+
 ### 選んだ会話を読む
 
-利用できる `agent-sessions` の実行ファイルを使い、本文を読む前に、許可された情報源参照とイベント数の上限を決める。\
-実行ファイルの導入と更新は、振り返りとは分けて行う。
+本文を読む前に、許可された情報源参照とイベント数の上限を確認する。
 
 1. **情報源の確認**: `show <source-ref>` で識別情報と関係を確認する。
 2. **取得前の版の検証**: `verify <source-ref>` を使い、検証済みの版を保持する。
@@ -129,10 +144,6 @@ flowchart TD
 各応答の `v2` のスキーマと欠落を確認し、本文を非公開のまま扱う。\
 部分的な取得を完全な取得と表現しない。\
 メタデータだけでは、エージェントの行動を裏付けられない。
-
-リポジトリによる情報源の選択は、[agent-sessions #25](https://github.com/mtk177a/agent-sessions/issues/25) に依存する。\
-利用できるようになるまでは、明示的に選んだ情報源参照を使う。\
-リポジトリへの所属を推測したり、プロバイダー固有のファイルを解析したりしない。
 
 ### 分析結果を読む
 
