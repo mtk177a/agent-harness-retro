@@ -42,6 +42,7 @@
 | --- | --- |
 | [`README.md`](../../README.md) | [`README.ja.md`](../../README.ja.md) |
 | [`AGENTS.md`](../../AGENTS.md) | [`AGENTS-ja.md`](../../AGENTS-ja.md) |
+| [`CONTRIBUTING.md`](../../CONTRIBUTING.md) | [`CONTRIBUTING-ja.md`](../../CONTRIBUTING-ja.md) |
 | [`docs/architecture.md`](../architecture.md) | [`docs/ja/architecture.md`](architecture.md) |
 | [`docs/evaluation.md`](../evaluation.md) | [`docs/ja/evaluation.md`](evaluation.md) |
 | [`docs/glossary.md`](../glossary.md) | [`docs/ja/glossary.md`](glossary.md) |

@@ -1,5 +1,5 @@
 <!--
-Maintainers: write the pull request title and Summary in English.
+Maintainers: follow the title format in CONTRIBUTING.md and write Summary in English.
 Use Japanese by default for other sections and comments; English is also allowed.
 External contributors are not required to use Japanese.
 -->

@@ -13,6 +13,7 @@ from pathlib import Path
 PAIRS = (
     ("README.md", "README.ja.md"),
     ("AGENTS.md", "AGENTS-ja.md"),
+    ("CONTRIBUTING.md", "CONTRIBUTING-ja.md"),
     ("docs/architecture.md", "docs/ja/architecture.md"),
     ("docs/evaluation.md", "docs/ja/evaluation.md"),
     ("docs/glossary.md", "docs/ja/glossary.md"),

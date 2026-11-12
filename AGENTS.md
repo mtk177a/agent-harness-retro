@@ -14,6 +14,8 @@ Before a material design or implementation change, read:
 
 Do not scan unrelated files merely to increase coverage.
 
+Follow the [Contributing Guide](CONTRIBUTING.md) for Issues, verification, commits, and pull requests.
+
 ## Design boundaries
 
 Preserve these constraints unless an explicit architecture decision supersedes them:
