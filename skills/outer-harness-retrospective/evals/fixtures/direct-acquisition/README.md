@@ -12,8 +12,8 @@ All identities, paths, conversations, tool activity, and harness files in this f
 ## Prepare a run
 
 1. **Copy the inputs**: Copy the provider stores and `project` into a disposable fixture outside this repository.
-2. **Provide the tool**: Use an available `agent-sessions` executable and record its source revision and binary hash.
-3. **Configure the sources**: Write an explicit `agent-sessions` configuration whose roots point only to those copies.
+2. **Provide the tool**: Use `agent-sessions` built from [c99054e](https://github.com/mtk177a/agent-sessions/tree/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b). Record the source revision and binary hash.
+3. **Configure the sources**: Use the [current configuration format](https://github.com/mtk177a/agent-sessions/blob/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b/docs/cli-json-contract.md#configuration-structure). Set `sources` to entries whose roots point only to the disposable stores.
 4. **Select inputs**: Use `list` to obtain source references for `case-18` through `case-21`. For the repository search cases, follow the [repository search conditions](#repository-search-conditions).
 5. **Supply the request**: Write `request.json` using the fields below and run the selected evaluation prompt under the repository's [evaluation policy](../../../../../docs/evaluation.md).
 
@@ -48,7 +48,6 @@ Current harness contradictions may support independent findings even when the se
 
 ## Repository search conditions
 
-For `case-22` through `case-24`, use a `v2` build from the merged [repository search change](https://github.com/mtk177a/agent-sessions/pull/27).\
 Initialize the disposable `project` as a Git repository and commit its synthetic files.\
 Supply its absolute path as `repository` in `request.json`, along with the `provider` and the `source_instance` or `root` described below.\
 Set `search_page_size` to `1`, `page_size` to `2`, and `max_events` to `40`.

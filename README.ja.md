@@ -109,7 +109,7 @@ Skill はバックグラウンドでセッションを監視しない。
 
 ```mermaid
 flowchart TD
-    source["agent-sessions v2"] --> selection["セッションの選択"]
+    source["agent-sessions"] --> selection["セッションの選択"]
     scope["振り返りの対象範囲"] --> selection
     selection --> bodies["選択した発言・ツールの本文"]
     bodies --> review["振り返り Skill に従うエージェント"]
@@ -120,19 +120,18 @@ flowchart TD
 
 ### 会話を選ぶ
 
-利用できる `agent-sessions` の実行ファイルを使う。\
-実行ファイルの導入と更新は、振り返りとは分けて行う。
+検証済みのリビジョン [c99054e](https://github.com/mtk177a/agent-sessions/tree/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b) からビルドした `agent-sessions` を使う。\
+実行ファイルと設定は振り返りの前に用意する。\
+最上位に `schema_version` がある設定を再利用する場合は、この版で使う前にその項目を削除する。 [既存の連携処理の更新手順](https://github.com/mtk177a/agent-sessions/blob/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b/docs/ja/cli-json-contract.md#既存の連携処理を更新する)
 
 - **選択済みの会話:** 渡された情報源参照を使う。
-- **リポジトリによる検索:** Git と、リポジトリ検索および `v2` の応答に対応した `agent-sessions` を使う。\
-  検証に使ったリビジョンは [a6e9b83](https://github.com/mtk177a/agent-sessions/tree/a6e9b833a126078a3c794e8b4e77f02c244f6110) である。\
-  許可された保存先ごとに `agent-sessions list --repository /fictional/project` を実行する。\
+- **リポジトリによる検索:** Git が使える環境で、許可された保存先ごとに `agent-sessions list --repository /fictional/project` を実行する。\
   `--provider` と確認済みの `--root` を指定するか、`--provider` と `--config`、その設定で確認済みの `--source-instance` を指定する。
 
 読む会話を選ぶ前に、検索結果のページと欠落を確認する。\
 所属不明の候補が残る場合は、一致が 0 件でも該当する会話がないとは判断できない。\
 一致は、記録された作業ディレクトリが対象リポジトリ内にあることを示す。\
-詳細は [リポジトリ検索の仕様](https://github.com/mtk177a/agent-sessions/blob/a6e9b833a126078a3c794e8b4e77f02c244f6110/docs/ja/cli-json-contract.md#ローカル-git-リポジトリのセッションを探す) を参照する。
+詳細は [リポジトリ検索の仕様](https://github.com/mtk177a/agent-sessions/blob/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b/docs/ja/cli-json-contract.md#ローカル-git-リポジトリのセッションを探す) を参照する。
 
 ### 選んだ会話を読む
 
@@ -144,8 +143,8 @@ flowchart TD
 4. **取得後の版の検証**: 再び `verify <source-ref>` を使い、前後の検証済みの版が一致した場合だけ証拠を使う。
 
 取得中は、同じ実行ファイルと情報源の設定を使う。\
-各応答の `v2` のスキーマと欠落を確認し、本文を非公開のまま扱う。\
-部分的な取得を完全な取得と表現しない。\
+各応答の必須項目と欠落を確認する。\
+本文は非公開のまま扱い、読めなかった範囲があれば報告する。\
 メタデータだけでは、エージェントの行動を裏付けられない。
 
 ### 分析結果を読む
@@ -241,7 +240,7 @@ flowchart TD
 ### セッション記録の取得元
 
 [`agent-sessions`](https://github.com/mtk177a/agent-sessions) は、コーディングエージェントの記録を読み、共通の形式で取り出すツールである。\
-`agent-harness-retro` は、その安定した `v2` の公開仕様を通じて、メッセージ、ツールの実行記録、記録の出所に関する情報を受け取る。\
+`agent-harness-retro` は、その公開 JSON 仕様を通じて、メッセージ、ツールの実行記録、記録の出所に関する情報を受け取る。\
 提供元に固有の生の形式の解析や、提供元のテレメトリの収集は行わない。
 
 ### 過去の会話に含まれる指示
