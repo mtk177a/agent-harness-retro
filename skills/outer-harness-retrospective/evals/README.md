@@ -64,7 +64,7 @@ Observe CLI commands, returned bodies, source versions, and the final analysis; 
 
 ### Direct acquisition results
 
-The [current CLI evaluation record](report.json) covers `case-12`, `case-18`, and `case-22`.\
+The [CLI response evaluation record](history/2026-11-12-cli-response-report.json) covers `case-12`, `case-18`, and `case-22`.\
 The agent rejected responses with missing or inconsistent fields, read the selected Codex and Claude Code conversations, and followed two search pages in a verified store.\
 For a record with no events, it treated the CLI's `data.events: null` response as an evidence gap.
 
