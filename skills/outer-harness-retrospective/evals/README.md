@@ -16,7 +16,7 @@ Each case also checks that the response stops at proposals, without harness edit
 | Source provenance | `case-05` | A version hint treated as verified, or the current harness substituted for an unknown historical version. |
 | Response selection | `case-06` ~ `case-10` | Duplicate guidance, the wrong scope, or a new instruction chosen without comparing other mechanisms. |
 | Existing guidance | `case-11` | Guidance that was not followed diagnosed as missing guidance. |
-| Schema gate | `case-12` | Missing or unsupported schema versions accepted as material support. |
+| CLI responses | `case-12` | Missing required fields, the wrong operation, or the wrong source accepted as material support. |
 | Historical instructions | `case-14` | Recorded instructions treated as current authority. |
 | Tool result uncertainty | `case-15` | Unknown outcomes or ambiguous call-result matches treated as verified facts. |
 | Metadata-only evidence | `case-16` | Behavioral findings invented without bounded observations, or a harness artifact marked as checked without evidence. |
@@ -64,7 +64,11 @@ Observe CLI commands, returned bodies, source versions, and the final analysis; 
 
 ### Direct acquisition results
 
-The [store confirmation evaluation record](report.json) covers `case-22` through `case-24`.\
+The [current CLI evaluation record](report.json) covers `case-12`, `case-18`, and `case-22`.\
+The agent rejected responses with missing or inconsistent fields, read the selected Codex and Claude Code conversations, and followed two search pages in a verified store.\
+For a record with no events, it treated the CLI's `data.events: null` response as an evidence gap.
+
+The [earlier store confirmation evaluation record](history/2026-11-12-store-confirmation-report.json) covers `case-22` through `case-24` with the previous CLI format.\
 The agent followed two pages in a verified store and used the zero-event match only as directory evidence.\
 It reported the unresolved match from an explicit root and skipped discovery when the requested store had no confirmed root.
 

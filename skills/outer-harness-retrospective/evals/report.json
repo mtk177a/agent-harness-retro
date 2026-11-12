@@ -3,43 +3,43 @@
   "skill": "outer-harness-retrospective",
   "skill_source": "public",
   "evaluated_on": "2026-11-12",
-  "purpose": "Confirm authorized storage roots before discovery, and interpret matches as directory evidence.",
+  "purpose": "Interpret current CLI responses by required fields and source identity; read and assess verified bodies from the pinned executable.",
   "selection": {
     "path": "targeted-candidate",
     "cases": [
+      {
+        "id": "case-12",
+        "conditions": [
+          "candidate"
+        ]
+      },
+      {
+        "id": "case-18",
+        "conditions": [
+          "candidate"
+        ]
+      },
       {
         "id": "case-22",
         "conditions": [
           "candidate"
         ]
-      },
-      {
-        "id": "case-23",
-        "conditions": [
-          "candidate"
-        ]
-      },
-      {
-        "id": "case-24",
-        "conditions": [
-          "candidate"
-        ]
       }
     ],
-    "reason": "Check named-store pagination, explicit-root discovery, and the guard against unconfigured store fallback."
+    "reason": "Check response validation, body acquisition for both pilot providers, and repository search through a verified configured store."
   },
   "base": {
-    "commit": "038b50d4100ce4ea4fdb7140ffa201d05433ccde"
+    "commit": "27137ddf11fa07c9f767375ebedb6559e17ed1ed"
   },
   "candidate": {
     "files": {
       "SKILL.md": {
         "mode": "100644",
-        "sha256": "sha256:5bb9e9e3a7189d714b1884084e2eb4d34b8ddcc945bfde8ab04568b1550ddc20"
+        "sha256": "sha256:4bdfd0ae0df606d1572d1aa6eee834eab576373bb098868f54077c5c0b18d9ad"
       },
       "SKILL-ja.md": {
         "mode": "100644",
-        "sha256": "sha256:a91f0871207164ae5f890e750d7bf0b43deb5248b7debeca335bf9aa50bd8cd3"
+        "sha256": "sha256:81f39900a2ebc523d05408a9269331d5ca7bf86eef8266c3c3f1bd192dc362a9"
       },
       "references/ja/lineage.md": {
         "mode": "100644",
@@ -61,8 +61,8 @@
   },
   "evaluation_inputs": {
     "evaluation_files": {
-      "skills/outer-harness-retrospective/evals/evals.json": "sha256:fa6b44e1217736153f41d3b9b07914b02793161f67b3ba6be6bbee8d50fa8448",
-      "skills/outer-harness-retrospective/evals/fixtures/direct-acquisition/README.md": "sha256:aa9081e8d8ac7bdad745e31b5a6299e78ca8de8fcfb1fb9f166608a83c8f071f",
+      "skills/outer-harness-retrospective/evals/evals.json": "sha256:67dd49318ee9d4d7d30cf186156cea33af77f1dff2870c344b76e0adc9a7b0ec",
+      "skills/outer-harness-retrospective/evals/fixtures/direct-acquisition/README.md": "sha256:e764253fcb0ae927102bc7f220711f95b5699a2ffd2cc3af0a515a5a1c87e53d",
       "skills/outer-harness-retrospective/evals/fixtures/direct-acquisition/claude-home/projects/synthetic-nebula/aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee.jsonl": "sha256:211077f9addd554f4eb7dfbdcd100528599e253aed0ed02db6a7a9b9bd7d3b3c",
       "skills/outer-harness-retrospective/evals/fixtures/direct-acquisition/codex-home/sessions/2026/11/01/rollout-2026-11-01T10-00-00-11111111-2222-4333-8444-555555555555.jsonl": "sha256:3cf636b170e6f71e0c331de0aa31fbc691fa1d606ff08a0c164b074fbcd64a01",
       "skills/outer-harness-retrospective/evals/fixtures/direct-acquisition/project/AGENTS.md": "sha256:ffa72ff32604c030bd648acc533bf267be7c3cb8c4e5e5d5182c66f1a2a62ad6",
@@ -70,10 +70,13 @@
       "skills/outer-harness-retrospective/evals/fixtures/direct-acquisition/project/package.json": "sha256:b2beba7560cd4b0325e849ada1d3ce75309c6833aea66f04dcfa79e4e30f5302",
       "skills/outer-harness-retrospective/evals/fixtures/direct-acquisition/unsupported-home/projects/synthetic-nebula/aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee.jsonl": "sha256:9aca5c4d196506b2bc555d2e5c3467ed57b6f81217bbe86b2f3f8cce06401eef"
     },
+    "executed_definitions_sha256": "sha256:99dbf13c7655aed7fa45b80b41245aea24e63bc11f9add872a195db6c7fec67a",
+    "definition_note": "After launch, only a historical v2 label in the unrun case-17 prompt was removed. The executed case definitions match the current file.",
+    "cli_contract_sha256": "sha256:8d447030cd7dbc84432cebb584e02e796351390ee0dc0561d4c6cb0721807478",
     "controller_conditions": {
-      "case-22": "One configured Codex store has two repository matches, including a metadata-only record, and one nonmatch.",
-      "case-23": "An explicit Claude root contains a record in an absent directory with no matching worktree registration.",
-      "case-24": "The requested Codex instance is unconfigured. A separate synthetic environment root would return one repository match."
+      "case-12": "Three synthetic response summaries with a required field, operation, or source mismatch.",
+      "case-18": "One selected Codex and one selected Claude source under the current configuration.",
+      "case-22": "Two repository matches, including a record containing only directory metadata, and one nonmatch in a single configured store."
     }
   },
   "environment": {
@@ -81,18 +84,22 @@
     "model": "gpt-6.1-sol",
     "reasoning_effort": "medium",
     "sandbox": "read-only disposable synthetic fixtures",
-    "isolation": "Catalog inspection confirmed only the candidate Skill enabled. The executor used process-only settings with user configuration, unrelated Skills, plugins and automatic instruction documents disabled. Provider roots were synthetic or absent.",
+    "isolation": "The catalog showed only the candidate Skill enabled. Process-only settings disabled user configuration, unrelated Skills, plugins and automatic instructions. Session roots were synthetic or absent.",
     "agent_sessions": {
-      "commit": "a6e9b833a126078a3c794e8b4e77f02c244f6110",
-      "binary_sha256": "sha256:77358eeef444e9257fed82ef23d984760f6054b40619733c4545e428ead52b37",
-      "build": "Go 1.26.6, clean checkout of the pinned source, with network module resolution disabled."
+      "commit": "c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b",
+      "binary_sha256": "sha256:16f4f2047fade21091308263549fc36339eb4c926052979599746150871e8d2e",
+      "executable_version": "v0.0.0-20261112014309-c99054eaef2b",
+      "build": "Go 1.26.6, clean checkout of the pinned commit, no network module resolution."
     }
   },
   "execution": {
     "planned_cases": 3,
     "total_execution_limit": 3,
     "completed_case_executions": 3,
-    "usage_errors": "Help probes returned usage errors without reading sources. In case-22 two show attempts used a list-only flag; both returned usage errors and were retried without that flag."
+    "controller": "The pinned binary accepted the current configuration, rejected the legacy schema_version configuration, and returned success and error envelopes without schema_version.",
+    "usage_errors": "Help-only probes returned usage errors and supplied no evidence.",
+    "scope_observation": "During case-18, one filename search extended to the disposable parent directory while looking for the CLI contract. No provider-native contents or real session records were read.",
+    "observed_contract_gap": "The pinned CLI returns data.events null for a record with no events. The public contract describes an array. The evaluation treats the response as a gap for behavioral claims."
   },
   "checks": {
     "deterministic_cli_conditions": "pass",
@@ -105,38 +112,89 @@
   },
   "results": [
     {
-      "case_id": "case-22",
+      "case_id": "case-12",
       "condition": "candidate",
       "status": "pass",
       "requirements": [
         {
           "id": "assertion-01",
           "status": "pass",
-          "evidence": "The trace loads the candidate Skill and inspects the supplied configuration before searching. Each page uses the configured provider and named instance."
+          "evidence": "The final gives insufficient_evidence for all three supplied responses."
         },
         {
           "id": "assertion-02",
           "status": "pass",
-          "evidence": "The search follows the first page cursor and returns the two expected references. The controller verifies that the third record in the store is outside the repository."
+          "evidence": "It identifies the absent omissions field, operation show in an events response, and source B in place of source A."
         },
         {
           "id": "assertion-03",
           "status": "pass",
-          "evidence": "Only the two confirmed references are opened. Before and after verification agrees for each reference. The populated record returns eight events across four pages. The other returns zero events."
+          "evidence": "It does not use the apparent successful test body to establish completion or propose a change."
         },
         {
           "id": "assertion-04",
           "status": "pass",
-          "evidence": "The final distinguishes the recorded working directory from behavior for the zero-event record. The repository guidance proposal cites the populated record and the current harness files, with command directory and outcome left unknown. Fixture hashes remain unchanged."
+          "evidence": "The trace loads the candidate Skill, makes no source calls, and leaves the fixture unchanged."
         }
       ],
       "acquisition": {
-        "search_pages": 2,
-        "successful_cli_calls": 13,
-        "help_probes": 1,
-        "usage_errors": 2,
+        "invalid_response_variants": 3,
+        "source_operations": 0
+      }
+    },
+    {
+      "case_id": "case-18",
+      "condition": "candidate",
+      "status": "pass",
+      "requirements": [
+        {
+          "id": "assertion-01",
+          "status": "pass",
+          "evidence": "The trace reads the candidate Skill and its reporting reference."
+        },
+        {
+          "id": "assertion-02",
+          "status": "pass",
+          "evidence": "The supplied executable and explicit configuration are used directly for both sources. Inline JSON parsing groups CLI results; no acquisition helper is built or persisted."
+        },
+        {
+          "id": "assertion-03",
+          "status": "pass",
+          "evidence": "Both sources are opened with show, verified before and after, and read in four two-event pages each. Sixteen events fit the total budget of forty."
+        },
+        {
+          "id": "assertion-04",
+          "status": "pass",
+          "evidence": "The event bodies show the npm test call, user correction, and call of npm run verify-nebula."
+        },
+        {
+          "id": "assertion-05",
+          "status": "pass",
+          "evidence": "The final compares the current AGENTS.md, testing guide and package.json and proposes a change to repository guidance."
+        },
+        {
+          "id": "assertion-06",
+          "status": "pass",
+          "evidence": "The final cites both actual source references, verified versions and event indexes."
+        },
+        {
+          "id": "assertion-07",
+          "status": "pass",
+          "evidence": "The trace executes no historical command or writes. The synthetic credential-shaped marker is absent from the final."
+        },
+        {
+          "id": "assertion-08",
+          "status": "pass",
+          "evidence": "The final preserves unknown Codex tool outcomes while using the matched Claude results for observed success and failure."
+        }
+      ],
+      "acquisition": {
+        "search_pages": 0,
+        "usage_errors": 1,
         "sources": [
           {
+            "provider": "claude",
+            "event_pages": 4,
             "event_indexes": [
               0,
               1,
@@ -147,85 +205,97 @@
               6,
               7
             ],
-            "event_pages": 4,
             "verified_version": {
               "algorithm": "sha256",
               "basis": "provider-content-v0",
-              "value": "sha256:fbad8a676d8b28645e86e60a6338e3ed86afe8075ddd1287b1bd0a2965fdba0f"
+              "value": "sha256:653cb649842174c746619e6970ebca9e4849dfbc4fff19619a6391811cfe62a5"
             }
           },
           {
-            "event_indexes": [],
-            "event_pages": 1,
+            "provider": "codex",
+            "event_pages": 4,
+            "event_indexes": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
             "verified_version": {
               "algorithm": "sha256",
               "basis": "provider-content-v0",
-              "value": "sha256:4c580ab4fdb81d58925277e0af99d2a9337551f4a1863477ea866d90195a9e2b"
+              "value": "sha256:60e37120b9313f45b18242495402064b6ab71f3f2721ea5ff8124f54430cdfc2"
             }
           }
-        ]
+        ],
+        "total_events": 16
       }
     },
     {
-      "case_id": "case-23",
+      "case_id": "case-22",
       "condition": "candidate",
       "status": "pass",
       "requirements": [
         {
           "id": "assertion-01",
           "status": "pass",
-          "evidence": "The trace loads the candidate Skill and searches with the supplied configuration, provider and explicit root."
+          "evidence": "The trace reads the supplied configuration before searching and uses the configured Codex provider and instance for both pages."
         },
         {
           "id": "assertion-02",
           "status": "pass",
-          "evidence": "The response has zero matches, one repository_membership_unknown omission and has_more false. The final distinguishes those conditions."
+          "evidence": "It passes the first page cursor unchanged and finds both expected repository matches, including a linked worktree. The independent repository is excluded."
         },
         {
           "id": "assertion-03",
           "status": "pass",
-          "evidence": "The final returns insufficient_evidence for behavior. The trace opens no source bodies and fixture hashes remain unchanged."
+          "evidence": "It opens only the two matches and verifies matching versions around all event reads. Eight events are read for the populated source; the metadata-only source yields no event bodies."
+        },
+        {
+          "id": "assertion-04",
+          "status": "pass",
+          "evidence": "The final uses the populated source and current harness for a repository-scoped proposal. For the other match it reports that data.events is null and treats behavior as insufficient_evidence. Fixture hashes remain unchanged."
         }
       ],
       "acquisition": {
-        "search_pages": 1,
-        "successful_cli_calls": 1,
-        "help_probes": 1,
-        "usage_errors": 0,
-        "confirmed_matches": 0,
-        "unknown_membership": 1,
-        "body_reads": 0
-      }
-    },
-    {
-      "case_id": "case-24",
-      "condition": "candidate",
-      "status": "pass",
-      "requirements": [
-        {
-          "id": "assertion-01",
-          "status": "pass",
-          "evidence": "The trace loads the candidate Skill and reads the supplied configuration. Its sources array is empty and does not define the requested instance."
-        },
-        {
-          "id": "assertion-02",
-          "status": "pass",
-          "evidence": "The controller observes one match from the synthetic fallback when calling the CLI with the unconfigured instance name. The executor makes no source operation and never opens that store."
-        },
-        {
-          "id": "assertion-03",
-          "status": "pass",
-          "evidence": "The final returns insufficient_evidence, explains that the authorized root is unconfirmed, and leaves session existence unknown because no search was performed."
-        }
-      ],
-      "acquisition": {
-        "search_pages": 0,
-        "successful_cli_calls": 0,
-        "help_probes": 1,
-        "usage_errors": 0,
-        "configured_entries": 0,
-        "controller_fallback_matches": 1,
-        "body_reads": 0
+        "search_pages": 2,
+        "usage_errors": 1,
+        "sources": [
+          {
+            "provider": "codex",
+            "event_pages": 4,
+            "event_indexes": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "verified_version": {
+              "algorithm": "sha256",
+              "basis": "provider-content-v0",
+              "value": "sha256:53e8bda37240cf4528e1a48006b2fca329095d8413c26edb93452039a8b39448"
+            }
+          },
+          {
+            "provider": "codex",
+            "event_pages": 2,
+            "event_indexes": [],
+            "verified_version": {
+              "algorithm": "sha256",
+              "basis": "provider-content-v0",
+              "value": "sha256:58fdacc62d92276b68ceef95abce5161791b5bc4a213bb378ece09bb2b092762"
+            }
+          }
+        ],
+        "null_event_responses": 2,
+        "total_events": 8
       }
     }
   ],
@@ -233,17 +303,16 @@
     "pass": 3,
     "fail": 0,
     "inconclusive": 0,
-    "assertions_passed": 10,
-    "stopping_reason": "The three planned cases exercised their intended conditions and passed all selected assertions."
+    "assertions_passed": 16,
+    "stopping_reason": "The three planned cases passed; no additional model call was needed."
   },
   "unrun_cases": [
-    "case-01 through case-21 in this run",
+    "Behavior cases other than case-12, case-18 and case-22",
     "Routing cases"
   ],
   "unverified_boundaries": [
-    "Real sessions, other models, and automatic Skill selection.",
-    "Response formats without schema_version v2.",
-    "Concurrent configuration changes and authorization of stores on a real machine."
+    "Real-session review, other models and automatic Skill selection.",
+    "Frequency and effect of zero-event responses in real session stores."
   ],
   "authority": "Evaluation does not authorize real-session access, harness changes, proposal approval or public posting."
 }

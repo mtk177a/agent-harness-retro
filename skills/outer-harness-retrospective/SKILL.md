@@ -34,7 +34,7 @@ If it is unavailable, report the missing prerequisite; installation and updates 
 
 Use explicitly selected source references when supplied.
 
-Search each authorized store separately:
+For repository-based selection, search each authorized store separately.
 
 1. **Confirm the store**: Confirm its provider and absolute root before any search.\
    To select a configured instance, inspect the authorized configuration and check that the provider, instance ID, and root match the request.\
@@ -42,7 +42,7 @@ Search each authorized store separately:
    If the root cannot be confirmed, report the gap and skip that store.
 2. **Search**: Run `agent-sessions list --repository <path> --provider <id>` with `--root <absolute-path>` or with `--config <path> --source-instance <id>` for the verified entry.\
    Keep each search within the agreed scope and limits.
-3. **Read the pages**: Use only `v2` results.\
+3. **Read the pages**: Check each response as described below.\
    Follow `page.next_cursor` with `--cursor` under the same search and source settings, within the agreed limits.
 4. **Select candidates**: Take `identity.source_ref` from each entry in `data.sources`.\
    Keep confirmed matches with `repository_evidence_incomplete`.
@@ -70,7 +70,8 @@ For each selected source:
 
 Keep the same executable and source configuration throughout the read.\
 If selection used `--root`, pass that root to each source operation.\
-Check each response's schema and coverage as described below; distinguish pagination from other omissions, and do not describe a budget-limited read as a complete source.\
+Check each response and its coverage as described below.\
+Distinguish pagination from other omissions, and do not describe a budget-limited read as a complete source.\
 Base behavioral observations on the recorded message and tool bodies, keeping their source version, event indexes, and reported uncertainty.\
 Read private bodies from the CLI output; if a temporary handoff is necessary, keep it outside the public repository and remove it after review.
 
@@ -78,7 +79,11 @@ Read private bodies from the CLI output; if a temporary handoff is necessary, ke
 
 Use bounded normalized session evidence with source references, verified versions, event indexes, completeness, and omissions.
 
-- **Schema**: Require `schema_version: v2` before interpreting an `agent-sessions` response as material support; missing or unsupported versions require `insufficient_evidence` without using the other fields as material support.
+- **CLI responses**
+
+  Check `operation`, `status`, `omissions`, and the other required fields for the requested command against the [public CLI contract](https://github.com/mtk177a/agent-sessions/blob/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b/docs/cli-json-contract.md#json-response-structure).\
+  For `show`, `events`, and `verify`, confirm that the response identifies the requested source.\
+  If required fields are missing or inconsistent, return `insufficient_evidence` for any decision that depends on that response.
 
 - **Provenance**: Use verified source versions, not version hints; keep findings linked to source evidence rather than relying on generated summaries.
 

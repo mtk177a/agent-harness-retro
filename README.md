@@ -106,7 +106,7 @@ The Skill does not monitor sessions in the background.
 
 ```mermaid
 flowchart TD
-    source["agent-sessions v2"] --> selection["Session selection"]
+    source["agent-sessions"] --> selection["Session selection"]
     scope["Review target and scope"] --> selection
     selection --> bodies["Selected message and tool bodies"]
     bodies --> review["Agent following the retrospective Skill"]
@@ -117,19 +117,18 @@ flowchart TD
 
 ### Select conversations
 
-Use an available `agent-sessions` executable.\
-Installing or updating the executable is separate from the review.
+Use an `agent-sessions` executable built from the tested revision [c99054e](https://github.com/mtk177a/agent-sessions/tree/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b).\
+Prepare the executable and configuration before the review.\
+To reuse a configuration with a top-level `schema_version`, remove that field before using this build. [Upgrade steps](https://github.com/mtk177a/agent-sessions/blob/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b/docs/cli-json-contract.md#upgrade-an-existing-integration)
 
 - **Selected conversations:** Use the supplied source references.
-- **Repository search:** Use Git and an `agent-sessions` build that supports repository search and `v2` responses.\
-  The tested revision is [a6e9b83](https://github.com/mtk177a/agent-sessions/tree/a6e9b833a126078a3c794e8b4e77f02c244f6110).\
-  Run `agent-sessions list --repository /fictional/project` separately for each authorized store.\
+- **Repository search:** With Git available, run `agent-sessions list --repository /fictional/project` separately for each authorized store.\
   Use `--provider` with the confirmed `--root`, or with `--config` and a `--source-instance` verified in that configuration.
 
 Review the search pages and omissions before choosing the conversations to read.\
 An empty search with unresolved membership does not establish that no conversation matches.\
 A match identifies a recorded working directory in the repository.\
-See the [repository search contract](https://github.com/mtk177a/agent-sessions/blob/a6e9b833a126078a3c794e8b4e77f02c244f6110/docs/cli-json-contract.md#find-sessions-for-a-local-git-repository).
+See the [repository search contract](https://github.com/mtk177a/agent-sessions/blob/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b/docs/cli-json-contract.md#find-sessions-for-a-local-git-repository).
 
 ### Read selected conversations
 
@@ -141,7 +140,8 @@ Confirm the authorized source references and event budget before reading bodies.
 4. **Verify after reading**: Use `verify <source-ref>` again and use the evidence only if both verified versions match.
 
 Use the same executable and source configuration throughout the read.\
-Check each response's `v2` schema and omissions, keep bodies private, and do not describe a partial read as complete.\
+Check the required fields and omissions in each response.\
+Keep bodies private and report any parts of the conversation you could not read.\
 Metadata alone does not establish agent behavior.
 
 ### Read the analysis result
@@ -237,7 +237,7 @@ For a proposed rule, explain why it is needed, where it applies, and what it is 
 ### Session record source
 
 [`agent-sessions`](https://github.com/mtk177a/agent-sessions) reads coding-agent records and presents them in a common format.\
-`agent-harness-retro` uses its stable `v2` interface to read messages, tool activity, and information about their sources.\
+`agent-harness-retro` uses its public JSON interface to read messages, tool activity, and information about their sources.\
 It does not parse provider-specific raw formats or collect provider telemetry.
 
 ### Instructions in past conversations
