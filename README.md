@@ -43,6 +43,7 @@ The Skill does not apply the proposed edit; you decide whether to make it.
 | Item | Status | Details |
 | --- | --- | --- |
 | Retrospective Skill | Implemented | [`outer-harness-retrospective`](skills/outer-harness-retrospective/SKILL.md) analyzes evidence and proposes improvements. |
+| Repository search | Available workflow | The agent uses `agent-sessions list --repository` to find candidate sessions for a local Git repository. |
 | Selected-session reading | Available workflow | The agent uses the public `agent-sessions` CLI directly to read conversation bodies. |
 | Executable evaluation cases | Available | The Skill's [`evals`](skills/outer-harness-retrospective/evals/README.md) directory contains cases that use fictional data. |
 | Review continuity | Future work | The current Skill does not save findings between reviews. |
@@ -99,23 +100,40 @@ The Skill does not monitor sessions in the background.
 
 ### Prepare the inputs
 
-- **Session evidence:** Records selected for a defined review.
+- **Session evidence:** Supplied evidence, selected source references, or authorized stores to search for sessions.
 - **Review target:** The repository or global artifact to examine, such as a shared Skill.
 - **Current harness:** Relevant files or observations that identify what was checked.
 
 ```mermaid
 flowchart TD
-    source["agent-sessions v2"] --> bodies["Selected message and tool bodies"]
+    source["agent-sessions v2"] --> selection["Session selection"]
+    scope["Review target and scope"] --> selection
+    selection --> bodies["Selected message and tool bodies"]
     bodies --> review["Agent following the retrospective Skill"]
-    scope["Review target and scope"] --> review
+    scope --> review
     harness["Current instructions and configuration"] --> review
     review --> result["Findings and decisions"]
 ```
 
+### Select conversations
+
+Use an available `agent-sessions` executable.\
+Installing or updating the executable is separate from the review.
+
+- **Selected conversations:** Use the supplied source references.
+- **Repository search:** Use Git and an `agent-sessions` build that supports repository search and `v2` responses.\
+  The tested revision is [a6e9b83](https://github.com/mtk177a/agent-sessions/tree/a6e9b833a126078a3c794e8b4e77f02c244f6110).\
+  Run `agent-sessions list --repository /fictional/project` separately for each authorized store.\
+  Use `--provider` with the confirmed `--root`, or with `--config` and a `--source-instance` verified in that configuration.
+
+Review the search pages and omissions before choosing the conversations to read.\
+An empty search with unresolved membership does not establish that no conversation matches.\
+A match identifies a recorded working directory in the repository.\
+See the [repository search contract](https://github.com/mtk177a/agent-sessions/blob/a6e9b833a126078a3c794e8b4e77f02c244f6110/docs/cli-json-contract.md#find-sessions-for-a-local-git-repository).
+
 ### Read selected conversations
 
-Use an available `agent-sessions` executable and select the authorized source references and event budget before reading bodies.\
-Installing or updating the executable is separate from the review.
+Confirm the authorized source references and event budget before reading bodies.
 
 1. **Confirm the source**: Use `show <source-ref>` to check its identity and relationships.
 2. **Verify before reading**: Use `verify <source-ref>` and retain the verified version.
@@ -125,9 +143,6 @@ Installing or updating the executable is separate from the review.
 Use the same executable and source configuration throughout the read.\
 Check each response's `v2` schema and omissions, keep bodies private, and do not describe a partial read as complete.\
 Metadata alone does not establish agent behavior.
-
-Repository-based source selection depends on [agent-sessions #25](https://github.com/mtk177a/agent-sessions/issues/25).\
-Until it is available, use explicitly selected source references; do not infer repository membership or parse provider-native files.
 
 ### Read the analysis result
 

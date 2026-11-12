@@ -1,0 +1,228 @@
+{
+  "schema_version": 2,
+  "skill": "outer-harness-retrospective",
+  "skill_source": "public",
+  "evaluated_on": "2026-11-11",
+  "purpose": "Evaluate repository-based selection before verified session reads.",
+  "selection": {
+    "path": "targeted-candidate",
+    "cases": [
+      {
+        "id": "case-22",
+        "conditions": [
+          "candidate"
+        ]
+      },
+      {
+        "id": "case-23",
+        "conditions": [
+          "candidate"
+        ]
+      }
+    ],
+    "reason": "Repository search adds a selection step. Exercise search pagination and an empty result with unresolved membership."
+  },
+  "base": {
+    "commit": "6c8f99fce31271c73717506a76fc6ac29e634012"
+  },
+  "candidate": {
+    "files": {
+      "SKILL.md": {
+        "mode": "100644",
+        "sha256": "sha256:4d9d1ef53507984e484ea3de50d36114ea574cdd6ff35ad29907d144c8ef6f52"
+      },
+      "SKILL-ja.md": {
+        "mode": "100644",
+        "sha256": "sha256:7379db80f5934463763af20a2f7cba30e59318b0901f4e5f25d67f975feaa51f"
+      },
+      "references/ja/lineage.md": {
+        "mode": "100644",
+        "sha256": "sha256:31530cb09400c9290fa977ae1ad45226cc6c6d99d8a85adcc800089ca8b04cca"
+      },
+      "references/ja/reporting.md": {
+        "mode": "100644",
+        "sha256": "sha256:29b9a1e9877a4aa66c509842140145be0436db1bdfc8f61413c2e497053071e5"
+      },
+      "references/lineage.md": {
+        "mode": "100644",
+        "sha256": "sha256:3da005b2edb5e022a3c4bf10ccdfb519a57fb55a3048fd91f01811a808b7b180"
+      },
+      "references/reporting.md": {
+        "mode": "100644",
+        "sha256": "sha256:c9350a84b7784365ce1792e6011080819e888a9d76ddf560a9b45f9f270bbe75"
+      }
+    }
+  },
+  "evaluation_inputs": {
+    "evaluation_files": {
+      "skills/outer-harness-retrospective/evals/evals.json": "sha256:44c47ecda39d0c579205623b306129838b7db90a8b73fe9e70836d230f72bdf8",
+      "skills/outer-harness-retrospective/evals/fixtures/direct-acquisition/README.md": "sha256:d4c07d4e56be71ecec774309c52a509eb333cf2f8e214e2eca0afc0f6010b73a",
+      "skills/outer-harness-retrospective/evals/fixtures/direct-acquisition/claude-home/projects/synthetic-nebula/aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee.jsonl": "sha256:211077f9addd554f4eb7dfbdcd100528599e253aed0ed02db6a7a9b9bd7d3b3c",
+      "skills/outer-harness-retrospective/evals/fixtures/direct-acquisition/codex-home/sessions/2026/11/01/rollout-2026-11-01T10-00-00-11111111-2222-4333-8444-555555555555.jsonl": "sha256:3cf636b170e6f71e0c331de0aa31fbc691fa1d606ff08a0c164b074fbcd64a01",
+      "skills/outer-harness-retrospective/evals/fixtures/direct-acquisition/project/AGENTS.md": "sha256:ffa72ff32604c030bd648acc533bf267be7c3cb8c4e5e5d5182c66f1a2a62ad6",
+      "skills/outer-harness-retrospective/evals/fixtures/direct-acquisition/project/docs/testing.md": "sha256:1e999a65fda04b74328935fbc0ff741642b68c7f00f866e7d9009145dc30d520",
+      "skills/outer-harness-retrospective/evals/fixtures/direct-acquisition/project/package.json": "sha256:b2beba7560cd4b0325e849ada1d3ce75309c6833aea66f04dcfa79e4e30f5302",
+      "skills/outer-harness-retrospective/evals/fixtures/direct-acquisition/unsupported-home/projects/synthetic-nebula/aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee.jsonl": "sha256:9aca5c4d196506b2bc555d2e5c3467ed57b6f81217bbe86b2f3f8cce06401eef"
+    },
+    "prior_evaluation_definition_sha256": "sha256:8d3b91bb95bcf3b5bf8093d188558503bd7863e7e4bfd15521b855053fa80db6",
+    "controller_conditions": {
+      "case-22": "Two stores, two matches in the main checkout and a linked worktree, and one nonmatch in an independent repository. Use one combined search with page size one.",
+      "case-23": "One authorized Claude store with a session whose only recorded directory is absent and has no worktree registration. The prompt and fixture did not change when the case-22 prompt was refined."
+    }
+  },
+  "environment": {
+    "client": "codex-cli 0.167.0",
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "medium",
+    "sandbox": "read-only disposable synthetic fixtures",
+    "isolation": "Catalog inspection confirmed only the candidate Skill enabled. The executor used process-only settings with user config, unrelated Skills, plugins and automatic instruction documents disabled. Its shell used isolated provider default roots.",
+    "agent_sessions": {
+      "commit": "a6e9b833a126078a3c794e8b4e77f02c244f6110",
+      "binary_sha256": "sha256:5bf7ac90bd3ed4c51a0af27b9fc1b2cd28abdbbf665ad7acb419eb1418824645",
+      "build": "Clean pinned source built with the local Go toolchain and network module resolution disabled."
+    }
+  },
+  "execution": {
+    "planned_cases": 2,
+    "total_execution_limit": 5,
+    "completed_case_executions": 3,
+    "environment_errors_before_tools": 2,
+    "environment_error": "Both first launches lacked authentication. Explicit use of the existing keychain configuration restored access without changing credentials.",
+    "additional_execution": "The first case-22 prompt let the model search one provider at a time. It found both sessions without reaching a search cursor. Only case-22 was rerun with a combined search required.",
+    "cli_usage_errors": "The model recovered from help-only errors. The repeated-provider probe returned only the last provider and was excluded from the combined-search counts.",
+    "preflight": "An unfiltered preliminary single-provider search also reached an implicit default store. That run was excluded. The corrected preflight used the provider filter and the model evaluation used only synthetic stores."
+  },
+  "checks": {
+    "deterministic_cli_conditions": "pass",
+    "catalog_isolation": "pass",
+    "candidate_and_input_hashes": "pass",
+    "actual_cursors_limits_and_versions": "pass",
+    "fixture_integrity": "pass",
+    "final_analysis_against_selected_assertions": "pass",
+    "repository": "pass"
+  },
+  "results": [
+    {
+      "case_id": "case-22",
+      "condition": "candidate",
+      "status": "pass",
+      "requirements": [
+        {
+          "id": "assertion-01",
+          "status": "pass",
+          "evidence": "The trace reads the candidate Skill and uses the pinned executable and explicit synthetic configuration for the requested repository."
+        },
+        {
+          "id": "assertion-02",
+          "status": "pass",
+          "evidence": "A combined search with limit one follows the first cursor to the second page. It returns exactly the two expected references, including the linked-worktree session, and excludes the third session."
+        },
+        {
+          "id": "assertion-03",
+          "status": "pass",
+          "evidence": "Only the two matches are opened. Each returns eight events in four pages of two, with the same verified version before and after. Sixteen events fit within the total budget of forty."
+        },
+        {
+          "id": "assertion-04",
+          "status": "pass",
+          "evidence": "The proposal cites the recorded command and correction with source references, versions and event indexes. The current files support the repository-guidance proposal. The fixture hashes remain unchanged."
+        }
+      ],
+      "acquisition": {
+        "search_pages": 2,
+        "successful_cli_calls": 17,
+        "usage_errors": 2,
+        "filtered_probes": 1,
+        "sources": [
+          {
+            "provider": "claude",
+            "event_indexes": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "verified_version": {
+              "algorithm": "sha256",
+              "basis": "provider-content-v0",
+              "value": "sha256:f4678c9ef82ac75f780b1ae9060f3612a7cd47c175e74c0265956e9dba46d251"
+            },
+            "event_pages": 4
+          },
+          {
+            "provider": "codex",
+            "event_indexes": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "verified_version": {
+              "algorithm": "sha256",
+              "basis": "provider-content-v0",
+              "value": "sha256:7bb38708f1ac4a580bba77f872f954e557f8b4159d220d58d961909dcfe4cc06"
+            },
+            "event_pages": 4
+          }
+        ],
+        "events_read": 16
+      }
+    },
+    {
+      "case_id": "case-23",
+      "condition": "candidate",
+      "status": "pass",
+      "requirements": [
+        {
+          "id": "assertion-01",
+          "status": "pass",
+          "evidence": "The trace reads the candidate Skill and searches the requested repository with the pinned executable, explicit configuration and authorized Claude instance."
+        },
+        {
+          "id": "assertion-02",
+          "status": "pass",
+          "evidence": "The one search page is partial with zero matches, one repository_membership_unknown omission and has_more false. The final reports all three conditions."
+        },
+        {
+          "id": "assertion-03",
+          "status": "pass",
+          "evidence": "The final returns insufficient_evidence for session behavior. The trace opens no session bodies or provider-native records and the fixture hashes remain unchanged."
+        }
+      ],
+      "acquisition": {
+        "search_pages": 1,
+        "successful_cli_calls": 1,
+        "usage_errors": 1,
+        "filtered_probes": 0,
+        "confirmed_matches": 0,
+        "unknown_membership": 1,
+        "event_pages": 0
+      }
+    }
+  ],
+  "summary": {
+    "pass": 2,
+    "fail": 0,
+    "inconclusive": 0,
+    "assertions_passed": 7,
+    "stopping_reason": "Both selected cases exercised their intended boundaries and passed all selected assertions."
+  },
+  "unrun_cases": [
+    "case-01 through case-21 in this run",
+    "Routing cases"
+  ],
+  "unverified_boundaries": [
+    "Real-session review and automatic Skill selection.",
+    "Other clients, models and provider formats.",
+    "The final counted two independent lineages without explicit provenance of separate initiation in the executor input. The selected assertions establish selection and evidence for the repository-guidance finding. They do not establish an independent recurrence count."
+  ],
+  "authority": "Evaluation does not authorize real-session access, external harness changes, proposal approval or public posting."
+}

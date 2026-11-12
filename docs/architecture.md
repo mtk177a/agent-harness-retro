@@ -42,6 +42,13 @@ It needs a bounded review scope, evidence with provenance and completeness infor
 The Skill stops at a report.\
 It does not save private retrospective state or apply proposals to harness files.
 
+### Session selection
+
+Use supplied source references or find candidates with `agent-sessions list --repository`.\
+`agent-sessions` determines repository membership, including linked worktrees and recorded directory changes.\
+The Skill selects sources within the review scope and carries forward unresolved membership and unread pages as separate limits.\
+A matching session can also contain work in other repositories.
+
 ### Direct session reads
 
 Select authorized source references and an event budget before reading bodies.\
@@ -50,8 +57,7 @@ Keep the executable and source configuration unchanged throughout the read.\
 A changed or unavailable verified version prevents using the read as material support.
 
 Check `v2` schemas, page coverage, and omissions; partial evidence supports only claims unaffected by its omissions.\
-Installation and updates are separate from analysis.\
-Repository-based source discovery awaits [agent-sessions #25](https://github.com/mtk177a/agent-sessions/issues/25); explicit source selection works with the existing CLI.
+Installation and updates are separate from analysis.
 
 Source listings and counts alone do not establish agent behavior.\
 Keep recorded bodies private and retain bounded references and observations in findings.
