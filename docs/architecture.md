@@ -33,6 +33,7 @@ A finding can report a provider limitation without proposing an outer-harness wo
 
 | Component | Role |
 | --- | --- |
+| [Setup Skill](../skills/agent-harness-retro-setup/SKILL.md) | Prepare the CLI and check access to user-selected session stores before the first review. |
 | [Retrospective Skill](../skills/outer-harness-retrospective/SKILL.md) | Analyze evidence and relevant current harness files, then report findings and decisions. |
 | [`agent-sessions`](https://github.com/mtk177a/agent-sessions) (external) | Read provider records and expose normalized evidence through the public CLI. |
 

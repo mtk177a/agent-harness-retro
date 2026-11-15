@@ -1,0 +1,16 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "agent-harness-retro",
+  "version": "0.1.0",
+  "description": "Set up local session access and review past coding-agent work for ways to improve the outer harness.",
+  "license": "MIT",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Agent Harness Retro",
+        "shortDescription": "Review past agent work",
+        "category": "Developer Tools"
+      }
+    }
+  }
+}

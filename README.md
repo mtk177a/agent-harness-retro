@@ -7,6 +7,7 @@ It proposes changes with supporting evidence and a way to check their effect.
 **Contents**
 
 - [Capabilities](#capabilities)
+- [Get started in Codex](#get-started-in-codex)
 - [Review targets](#review-targets)
 - [Review workflow](#review-workflow)
 - [Review criteria](#review-criteria)
@@ -47,6 +48,33 @@ The Skill does not apply the proposed edit; you decide whether to make it.
 | Selected-session reading | Available workflow | The agent uses the public `agent-sessions` CLI directly to read conversation bodies. |
 | Executable evaluation cases | Available | The Skill's [`evals`](skills/outer-harness-retrospective/evals/README.md) directory contains cases that use fictional data. |
 | Review continuity | Future work | The current Skill does not save findings between reviews. |
+
+## Get started in Codex
+
+### Install the plugin
+
+From this checkout, build a local marketplace in a new directory and register it with Codex.
+
+```sh
+sh scripts/package_plugin.sh "$PWD/dist"
+codex plugin marketplace add "$PWD/dist"
+```
+
+In Codex desktop, open **Plugins**, select **Agent Harness Retro Local**, and install **Agent Harness Retro**.\
+If the marketplace does not appear, restart the app.
+
+### Run the first retrospective
+
+1. **Prepare session access** — In a local Codex chat, explicitly invoke `agent-harness-retro-setup`. Choose the Codex or Claude Code stores to use. If the CLI is missing, choose where to install it.
+2. **Select evidence** — Once setup confirms access, invoke `outer-harness-retrospective`. Give it the executable and store settings reported by setup, the repository or sessions to review, and the question to investigate.
+3. **Review the result** — Check which sessions were read, any gaps in the evidence, and which findings or proposals the evidence supports.
+
+Building the CLI on macOS requires Git, Go 1.26 or later, and access to GitHub.\
+If the chat cannot reach GitHub, build the CLI in a terminal and pass its absolute path to the setup Skill.
+
+```sh
+sh skills/agent-harness-retro-setup/scripts/install-agent-sessions.sh "$HOME/.local/bin"
+```
 
 ## Review targets
 
@@ -117,9 +145,8 @@ flowchart TD
 
 ### Select conversations
 
-Use an `agent-sessions` executable built from the tested revision [c99054e](https://github.com/mtk177a/agent-sessions/tree/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b).\
-Prepare the executable and configuration before the review.\
-To reuse a configuration with a top-level `schema_version`, remove that field before using this build. [Upgrade steps](https://github.com/mtk177a/agent-sessions/blob/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b/docs/cli-json-contract.md#upgrade-an-existing-integration)
+Use the executable and store settings from [initial setup](#run-the-first-retrospective).\
+For a standalone installation, build `agent-sessions` from [8bc9542](https://github.com/mtk177a/agent-sessions/tree/8bc9542a15ed85f0b9b341886e920c76b1572d20). [Upgrade steps for older configurations](https://github.com/mtk177a/agent-sessions/blob/8bc9542a15ed85f0b9b341886e920c76b1572d20/docs/cli-json-contract.md#upgrade-an-existing-integration)
 
 - **Selected conversations:** Use the supplied source references.
 - **Repository search:** With Git available, run `agent-sessions list --repository /fictional/project` separately for each authorized store.\
@@ -128,7 +155,7 @@ To reuse a configuration with a top-level `schema_version`, remove that field be
 Review the search pages and omissions before choosing the conversations to read.\
 An empty search with unresolved membership does not establish that no conversation matches.\
 A match identifies a recorded working directory in the repository.\
-See the [repository search contract](https://github.com/mtk177a/agent-sessions/blob/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b/docs/cli-json-contract.md#find-sessions-for-a-local-git-repository).
+See the [repository search contract](https://github.com/mtk177a/agent-sessions/blob/8bc9542a15ed85f0b9b341886e920c76b1572d20/docs/cli-json-contract.md#find-sessions-for-a-local-git-repository).
 
 ### Read selected conversations
 

@@ -18,6 +18,7 @@ PAIRS = (
     ("docs/evaluation.md", "docs/ja/evaluation.md"),
     ("docs/glossary.md", "docs/ja/glossary.md"),
     ("docs/localization.md", "docs/ja/localization.md"),
+    ("skills/agent-harness-retro-setup/SKILL.md", "skills/agent-harness-retro-setup/SKILL-ja.md"),
     ("skills/outer-harness-retrospective/SKILL.md", "skills/outer-harness-retrospective/SKILL-ja.md"),
     ("skills/outer-harness-retrospective/references/lineage.md", "skills/outer-harness-retrospective/references/ja/lineage.md"),
     ("skills/outer-harness-retrospective/references/reporting.md", "skills/outer-harness-retrospective/references/ja/reporting.md"),
@@ -48,11 +49,13 @@ def check_pairs(root: Path) -> None:
 
 
 def check_skill(root: Path) -> None:
-    text = (root / SKILL_DIR / "SKILL.md").read_text(encoding="utf-8")
-    require(text.startswith("---\n"), "Skill frontmatter is missing")
-    header = text.split("---", 2)[1]
-    require(f"name: {SKILL}" in header, "Skill name is incorrect")
-    require("description: " in header, "Skill description is missing")
+    for name in ("agent-harness-retro-setup", SKILL):
+        path = root / "skills" / name / "SKILL.md"
+        text = path.read_text(encoding="utf-8")
+        require(text.startswith("---\n"), f"{path}: Skill frontmatter is missing")
+        header = text.split("---", 2)[1].splitlines()
+        require(f"name: {name}" in header, f"{path}: Skill name is incorrect")
+        require(any(line.startswith("description: ") for line in header), f"{path}: Skill description is missing")
 
 
 def check_evaluations(root: Path) -> None:
