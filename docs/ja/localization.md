@@ -47,6 +47,7 @@
 | [`docs/evaluation.md`](../evaluation.md) | [`docs/ja/evaluation.md`](evaluation.md) |
 | [`docs/glossary.md`](../glossary.md) | [`docs/ja/glossary.md`](glossary.md) |
 | [`docs/localization.md`](../localization.md) | [`docs/ja/localization.md`](localization.md) |
+| [`skills/agent-harness-retro-setup/SKILL.md`](../../skills/agent-harness-retro-setup/SKILL.md) | [`skills/agent-harness-retro-setup/SKILL-ja.md`](../../skills/agent-harness-retro-setup/SKILL-ja.md) |
 | [`skills/outer-harness-retrospective/SKILL.md`](../../skills/outer-harness-retrospective/SKILL.md) | [`skills/outer-harness-retrospective/SKILL-ja.md`](../../skills/outer-harness-retrospective/SKILL-ja.md) |
 | [`skills/outer-harness-retrospective/references/lineage.md`](../../skills/outer-harness-retrospective/references/lineage.md) | [`skills/outer-harness-retrospective/references/ja/lineage.md`](../../skills/outer-harness-retrospective/references/ja/lineage.md) |
 | [`skills/outer-harness-retrospective/references/reporting.md`](../../skills/outer-harness-retrospective/references/reporting.md) | [`skills/outer-harness-retrospective/references/ja/reporting.md`](../../skills/outer-harness-retrospective/references/ja/reporting.md) |

@@ -10,6 +10,7 @@
 **目次**
 
 - [このプロジェクトでできること](#このプロジェクトでできること)
+- [Codex で使い始める](#codex-で使い始める)
 - [振り返りの対象](#振り返りの対象)
 - [振り返りの進め方](#振り返りの進め方)
 - [振り返りの判断基準](#振り返りの判断基準)
@@ -50,6 +51,33 @@ Skill は変更を適用せず、採用するかどうかは依頼者が決め�
 | 選んだ会話の読み取り | 手順を用意済み | エージェントが `agent-sessions` の公開 CLI を直接使い、会話本文を読む。 |
 | 実行可能な評価ケース | 用意済み | Skill の [`evals`](skills/outer-harness-retrospective/evals/README.md) で架空のデータを使って評価する。 |
 | 振り返りの継続 | 今後の課題 | 現在の Skill は結果を保存しない。 |
+
+## Codex で使い始める
+
+### Plugin を導入する
+
+このリポジトリのチェックアウトで、ローカルマーケットプレイスを新しいディレクトリに作り、Codex に登録する。
+
+```sh
+sh scripts/package_plugin.sh "$PWD/dist"
+codex plugin marketplace add "$PWD/dist"
+```
+
+Codex デスクトップで **Plugins** を開き、**Agent Harness Retro Local** から **Agent Harness Retro** をインストールする。\
+マーケットプレイスが表示されない場合は、アプリを再起動する。
+
+### 初めての振り返りを実行する
+
+1. **会話を読めるようにする** — Codex のローカルチャットで `agent-harness-retro-setup` を明示的に呼び出す。振り返りに使う Codex または Claude Code の保存先を選ぶ。CLI がなければインストール先も選ぶ。
+2. **振り返る対象を選ぶ** — 初期設定で保存先を読めることを確認したら、`outer-harness-retrospective` を呼び出す。初期設定で確認した実行ファイルと保存先の指定、対象のリポジトリまたは会話、調べたいことを伝える。
+3. **結果を確認する** — 読み取れた会話、取得できなかった情報、証拠で裏付けられた所見や提案を確認する。
+
+macOS で CLI をビルドするには、Git、Go 1.26 以降、GitHub への接続が必要である。\
+チャットから GitHub に接続できない場合は、ターミナルで CLI をビルドし、実行ファイルの絶対パスを初期設定 Skill に渡す。
+
+```sh
+sh skills/agent-harness-retro-setup/scripts/install-agent-sessions.sh "$HOME/.local/bin"
+```
 
 ## 振り返りの対象
 
@@ -120,9 +148,8 @@ flowchart TD
 
 ### 会話を選ぶ
 
-動作を確認したコミット [c99054e](https://github.com/mtk177a/agent-sessions/tree/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b) からビルドした `agent-sessions` を使う。\
-実行ファイルと設定は振り返りの前に用意する。\
-既存の設定に最上位の `schema_version` がある場合は、今回ビルドした CLI でその設定を使う前に、項目を削除する。 [既存の連携処理の更新手順](https://github.com/mtk177a/agent-sessions/blob/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b/docs/ja/cli-json-contract.md#既存の連携処理を更新する)
+[初期設定](#初めての振り返りを実行する) で確認した実行ファイルと保存先の指定を使う。\
+Plugin を使わずに導入する場合は、コミット [8bc9542](https://github.com/mtk177a/agent-sessions/tree/8bc9542a15ed85f0b9b341886e920c76b1572d20) から `agent-sessions` をビルドする。 [古い設定の更新手順](https://github.com/mtk177a/agent-sessions/blob/8bc9542a15ed85f0b9b341886e920c76b1572d20/docs/ja/cli-json-contract.md#既存の連携処理を更新する)
 
 - **読む会話が決まっている場合**: 渡された `source_ref` を使う。
 - **リポジトリから会話を探す場合**: Git が使える環境で、許可された保存先ごとに `agent-sessions list --repository /fictional/project` を実行する。\
@@ -131,7 +158,7 @@ flowchart TD
 読む会話を選ぶ前に、取得した検索結果のページと、CLI が報告した欠落を確認する。\
 作業ディレクトリが対象リポジトリに属するか判断できない候補が残る場合は、一致が 0 件でも該当する会話がないとは判断できない。\
 一致は、記録された作業ディレクトリが対象リポジトリ内にあることを示す。\
-詳細は [リポジトリ検索の仕様](https://github.com/mtk177a/agent-sessions/blob/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b/docs/ja/cli-json-contract.md#ローカル-git-リポジトリのセッションを探す) を参照する。
+詳細は [リポジトリ検索の仕様](https://github.com/mtk177a/agent-sessions/blob/8bc9542a15ed85f0b9b341886e920c76b1572d20/docs/ja/cli-json-contract.md#ローカル-git-リポジトリのセッションを探す) を参照する。
 
 ### 選んだ会話を読む
 

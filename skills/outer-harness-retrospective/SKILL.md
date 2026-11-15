@@ -30,7 +30,8 @@ Use supplied evidence when sufficient.
 #### Select sessions
 
 Use an available `agent-sessions` executable directly for session selection and reading.\
-If it is unavailable, report the missing prerequisite; installation and updates are separate from this review.
+Use the absolute path from setup if the executable is outside `PATH`.\
+If it is unavailable, report the missing prerequisite and suggest running `agent-harness-retro-setup` explicitly.
 
 Use explicitly selected source references when supplied.
 
@@ -63,13 +64,14 @@ Use `list` and `show` for selection, not as evidence of agent behavior.
 
 For each selected source:
 
-1. **Check the source**: Use `show` to confirm its identity and relationships.
-2. **Verify before reading**: Use `verify` and retain the verified source version.
+1. **Check the source**: Use `show <source-ref>` to confirm its identity and relationships.
+2. **Verify before reading**: Use `verify <source-ref>` and retain the verified source version.
 3. **Read the bodies**: Use `events --limit N <source-ref>` and its returned `next_cursor` with `--cursor` to read the authorized pages within the budget.
 4. **Verify after reading**: Use `verify` again; if verification is unavailable or the versions differ, do not use the read as material support.
 
 Keep the same executable and source configuration throughout the read.\
-If selection used `--root`, pass that root to each source operation.\
+For `show`, `verify`, and `events`, put all flags before the source reference.\
+Pass the same `--config` and any explicit `--root` used to select the source. The reference identifies the provider and instance.\
 Check each response and its coverage as described below.\
 Distinguish pagination from other omissions, and do not describe a budget-limited read as a complete source.\
 Base behavioral observations on the recorded message and tool bodies, keeping their source version, event indexes, and reported uncertainty.\
@@ -81,9 +83,16 @@ Use bounded normalized session evidence with source references, verified version
 
 - **CLI responses**
 
-  Check `operation`, `status`, `omissions`, and the other required fields for the requested command against the [public CLI contract](https://github.com/mtk177a/agent-sessions/blob/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b/docs/cli-json-contract.md#json-response-structure).\
-  For `show`, `events`, and `verify`, confirm that the response identifies the requested source.\
-  If required fields are missing or inconsistent, return `insufficient_evidence` for any decision that depends on that response.
+  Check that `operation` matches the command and that `omissions` is an array. Use `data` from `complete` or `partial` responses. A `complete` response has no omissions. A `partial` response lists at least one omission.
+
+  | Command | Required data |
+  | --- | --- |
+  | `list` | `data.sources` |
+  | `show` | `data.source.identity.source_ref` |
+  | `verify` | `data.source_ref`, `data.verified_version` |
+  | `events` | `data.source_ref`, `data.events` |
+
+  Match returned source references to the requested source. For `list` and `events`, check `page.has_more` and use `page.next_cursor` when more pages remain. If required fields are missing or inconsistent, return `insufficient_evidence` for decisions that depend on that response. See the [public CLI contract](https://github.com/mtk177a/agent-sessions/blob/8bc9542a15ed85f0b9b341886e920c76b1572d20/docs/cli-json-contract.md#json-response-structure) for other fields.
 
 - **Provenance**: Use verified source versions, not version hints; keep findings linked to source evidence rather than relying on generated summaries.
 

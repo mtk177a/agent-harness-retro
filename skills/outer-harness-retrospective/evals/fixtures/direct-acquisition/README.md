@@ -12,8 +12,8 @@ All identities, paths, conversations, tool activity, and harness files in this f
 ## Prepare a run
 
 1. **Copy the inputs**: Copy the provider stores and `project` into a disposable fixture outside this repository.
-2. **Provide the tool**: Use `agent-sessions` built from [c99054e](https://github.com/mtk177a/agent-sessions/tree/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b). Record the source revision and binary hash.
-3. **Configure the sources**: Use the [current configuration format](https://github.com/mtk177a/agent-sessions/blob/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b/docs/cli-json-contract.md#configuration-structure). Set `sources` to entries whose roots point only to the disposable stores.
+2. **Provide the tool**: Build `agent-sessions` from the commit in the [setup installer](../../../../agent-harness-retro-setup/scripts/install-agent-sessions.sh). Record the source revision and binary hash.
+3. **Configure the sources**: Use the [current configuration format](https://github.com/mtk177a/agent-sessions/blob/8bc9542a15ed85f0b9b341886e920c76b1572d20/docs/cli-json-contract.md#configuration-structure). Set `sources` to entries whose roots point only to the disposable stores.
 4. **Select inputs**: Use `list` to obtain source references for `case-18` through `case-21`. For the repository search cases, follow the [repository search conditions](#repository-search-conditions).
 5. **Supply the request**: Write `request.json` using the fields below and run the selected evaluation prompt under the repository's [evaluation policy](../../../../../docs/evaluation.md).
 

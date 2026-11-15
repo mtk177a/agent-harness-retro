@@ -44,6 +44,7 @@ External contributors are not required to write Japanese.
 | [`docs/evaluation.md`](evaluation.md) | [`docs/ja/evaluation.md`](ja/evaluation.md) |
 | [`docs/glossary.md`](glossary.md) | [`docs/ja/glossary.md`](ja/glossary.md) |
 | [`docs/localization.md`](localization.md) | [`docs/ja/localization.md`](ja/localization.md) |
+| [`skills/agent-harness-retro-setup/SKILL.md`](../skills/agent-harness-retro-setup/SKILL.md) | [`skills/agent-harness-retro-setup/SKILL-ja.md`](../skills/agent-harness-retro-setup/SKILL-ja.md) |
 | [`skills/outer-harness-retrospective/SKILL.md`](../skills/outer-harness-retrospective/SKILL.md) | [`skills/outer-harness-retrospective/SKILL-ja.md`](../skills/outer-harness-retrospective/SKILL-ja.md) |
 | [`skills/outer-harness-retrospective/references/lineage.md`](../skills/outer-harness-retrospective/references/lineage.md) | [`skills/outer-harness-retrospective/references/ja/lineage.md`](../skills/outer-harness-retrospective/references/ja/lineage.md) |
 | [`skills/outer-harness-retrospective/references/reporting.md`](../skills/outer-harness-retrospective/references/reporting.md) | [`skills/outer-harness-retrospective/references/ja/reporting.md`](../skills/outer-harness-retrospective/references/ja/reporting.md) |

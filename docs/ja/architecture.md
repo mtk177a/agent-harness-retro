@@ -37,6 +37,7 @@
 
 | 構成要素 | 役割 |
 | --- | --- |
+| [初期設定用 Skill](../../skills/agent-harness-retro-setup/SKILL-ja.md) | 最初の振り返りの前に CLI を用意し、利用者が選んだ保存先から一覧を取得できるか確認する。 |
 | [振り返り用 Skill](../../skills/outer-harness-retrospective/SKILL-ja.md) | 証拠と関連する現在のハーネスのファイルを照らし合わせ、所見と判断を報告する。 |
 | [`agent-sessions`](https://github.com/mtk177a/agent-sessions) （外部ツール） | 提供元の記録を読み、公開 CLI から共通形式で返す。 |
 

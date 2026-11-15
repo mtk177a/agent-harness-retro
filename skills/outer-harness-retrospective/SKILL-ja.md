@@ -44,8 +44,8 @@ description: コーディングエージェントの過去の作業から、ユ�
 #### セッションを選ぶ
 
 セッションの選択と読み取りには、実行できる `agent-sessions` を直接使う。\
-使える実行ファイルがなければ、`agent-sessions` が必要だと報告する。\
-インストールと更新は、この振り返りとは別に行う。
+`PATH` にない場合は、初期設定で確認した実行ファイルの絶対パスを使う。\
+使える実行ファイルがなければ、そのことを伝え、`agent-harness-retro-setup` を明示的に呼び出すよう案内する。
 
 読むセッションの参照が指定されていれば、それを使う。
 
@@ -79,14 +79,15 @@ CLI で依頼された検索を完了できない場合は、不足を報告し�
 
 選んだ各情報源について、次の手順で読む。
 
-1. **読むセッションを確認する**: `show` で、どの記録か、ほかの記録とどんな関係があるかを確認する。
-2. **読む前の内容を特定する**: `verify` を実行し、記録の内容を識別する `verified_version` を控える。
+1. **読むセッションを確認する**: `show <source-ref>` で、どの記録か、ほかの記録とどんな関係があるかを確認する。
+2. **読む前の内容を特定する**: `verify <source-ref>` を実行し、記録の内容を識別する `verified_version` を控える。
 3. **本文を読む**: `events --limit N <source-ref>` で取得し、続きは返された `next_cursor` を `--cursor` に渡して、許可されたページをイベント数の上限内で読む。
 4. **内容が途中で変わっていないか確かめる**: 再び `verify` を実行する。\
    検証できない場合や前後の `verified_version` が異なる場合は、読んだ内容を重要な根拠として使わない。
 
 取得中は、同じ実行ファイルと情報源の設定を使う。\
-選択時に `--root` を指定した場合は、読み取り時の各操作にも同じ保存先を渡す。\
+`show`、`verify`、`events` では、すべてのオプションを `source_ref` の前に置く。\
+選択時に `--config` や `--root` を指定した場合は、読み取り時にも同じ値を渡す。プロバイダーとインスタンスは `source_ref` から決まる。\
 次の節に従い、各応答の内容と、どこまで読めたかを確認する。\
 未取得のページと、それ以外の欠落を区別する。\
 上限に達して途中までしか読めなかった場合は、すべて読んだと報告しない。\
@@ -102,9 +103,16 @@ CLI で依頼された検索を完了できない場合は、不足を報告し�
 
 - **CLI の応答**
 
-  `operation`、`status`、`omissions` など、指定したコマンドの必須項目を [CLI の公開仕様](https://github.com/mtk177a/agent-sessions/blob/c99054eaef2b0cbfcf39f8e8c0dca7670fdd9c1b/docs/ja/cli-json-contract.md#json-応答の構成) に照らして確認する。\
-  `show`、`events`、`verify` では、応答が指定した情報源を指していることを確認する。\
-  必須項目の欠落や不整合がある場合、その応答に依存する判断は `insufficient_evidence` とする。
+  `operation` がコマンドと一致し、`omissions` が配列であることを確かめる。`data` を使うのは `complete` または `partial` の応答である。`complete` の場合、`omissions` は空である。`partial` の場合、少なくとも 1 件の欠落がある。
+
+  | コマンド | 必須のデータ |
+  | --- | --- |
+  | `list` | `data.sources` |
+  | `show` | `data.source.identity.source_ref` |
+  | `verify` | `data.source_ref`、`data.verified_version` |
+  | `events` | `data.source_ref`、`data.events` |
+
+  返された `source_ref` が、指定した情報源と一致することを確かめる。`list` と `events` では `page.has_more` を確認し、次のページがある場合は `page.next_cursor` を使う。必須項目の欠落や不整合がある場合、その応答に依存する判断は `insufficient_evidence` とする。ほかの項目は [CLI の公開仕様](https://github.com/mtk177a/agent-sessions/blob/8bc9542a15ed85f0b9b341886e920c76b1572d20/docs/ja/cli-json-contract.md#json-応答の構成) を参照する。
 
 - **証拠の出所**
 
